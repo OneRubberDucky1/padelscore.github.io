@@ -14,6 +14,9 @@ class ScoreViewModel : ViewModel() {
     val leftScore: String get() = displayScore(isLeft = true)
     val rightScore: String get() = displayScore(isLeft = false)
 
+    val leftGameScore: Int get() = state.gameScoreLeft
+    val rightGameScore: Int get() = state.gameScoreRight
+
     fun incrementLeft() = handleIncrement(isLeft = true)
     fun incrementRight() = handleIncrement(isLeft = false)
 
@@ -54,6 +57,11 @@ class ScoreViewModel : ViewModel() {
     }
 
     private fun onGameWon(isLeft: Boolean) {
-        // handle win
+        state = if (isLeft) {
+            state.copy(gameScoreLeft = state.gameScoreLeft + 1)
+        } else {
+            state.copy(gameScoreRight = state.gameScoreRight + 1)
+        }
+        state = state.copy(counterLeft = 0, counterRight = 0, advantage = -1)
     }
 }
