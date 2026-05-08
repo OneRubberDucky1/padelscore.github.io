@@ -11,6 +11,11 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -39,14 +44,14 @@ fun ScoreScreen(matchFormat: Int = 3, viewModel: ScoreViewModel = viewModel(fact
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            ScoreButton(score = viewModel.leftScore, onClick = { viewModel.incrementLeft() })
+            ScoreButton(score = viewModel.leftScore, isServing = viewModel.isLeftServing, onClick = { viewModel.incrementLeft() })
             Text(
                 text = ":",
                 fontSize = ScoreSize,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colors.onPrimary
             )
-            ScoreButton(score = viewModel.rightScore, onClick = { viewModel.incrementRight() })
+            ScoreButton(score = viewModel.rightScore, isServing = !viewModel.isLeftServing, onClick = { viewModel.incrementRight() })
         }
         Spacer(modifier = Modifier.height(8.dp))
         GameTracker(leftGames = viewModel.leftGameScore, rightGames = viewModel.rightGameScore)
@@ -60,13 +65,34 @@ fun ScoreScreenPreview() {
 }
 
 @Composable
-fun ScoreButton(score: String, onClick: () -> Unit) {
+fun ScoreButton(score: String, isServing: Boolean, onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        modifier = Modifier.size(scoreButton, scoreButton),
+        modifier = Modifier
+            .size(scoreButton, scoreButton)
+            .drawBehind {
+                val corner = CornerRadius(10.dp.toPx())
+                if (isServing) {
+                    drawRoundRect(
+                        brush = Brush.linearGradient(
+                            colorStops = arrayOf(
+                                0.0f to CobaltLight,
+                                0.3f to CobaltLine,
+                                1.0f to CobaltDark
+                            ),
+                            start = Offset(size.width, 0f),
+                            end = Offset(0f, size.height)
+                        ),
+                        cornerRadius = corner
+                    )
+                } else {
+                    drawRoundRect(color = CobaltLight, cornerRadius = corner)
+                }
+            },
         shape = ButtonShape,
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = MaterialTheme.colors.primary
+            backgroundColor = Color.Transparent,
+            contentColor = Color.White
         )
     ) {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
@@ -74,7 +100,7 @@ fun ScoreButton(score: String, onClick: () -> Unit) {
                 text = score,
                 fontSize = ScoreSize,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colors.onPrimary
+                color = if (isServing) Color.White else Color.Black
             )
         }
     }

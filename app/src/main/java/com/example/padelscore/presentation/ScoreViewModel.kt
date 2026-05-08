@@ -25,6 +25,7 @@ class ScoreViewModel(val matchFormat: Int) : ViewModel() {
 
     val leftGameScore: Int get() = state.gameScoreLeft
     val rightGameScore: Int get() = state.gameScoreRight
+    val isLeftServing: Boolean get() = state.isLeftServing
 
     fun incrementLeft() = handleIncrement(isLeft = true)
     fun incrementRight() = handleIncrement(isLeft = false)
@@ -67,9 +68,9 @@ class ScoreViewModel(val matchFormat: Int) : ViewModel() {
 
     private fun onGameWon(isLeft: Boolean) {
         state = if (isLeft) {
-            state.copy(gameScoreLeft = state.gameScoreLeft + 1)
+            state.copy(gameScoreLeft = state.gameScoreLeft + 1, isLeftServing = !state.isLeftServing)
         } else {
-            state.copy(gameScoreRight = state.gameScoreRight + 1)
+            state.copy(gameScoreRight = state.gameScoreRight + 1, isLeftServing = !state.isLeftServing)
         }
         checkMatchWin(isLeft, state)
         resetState()
@@ -80,7 +81,7 @@ class ScoreViewModel(val matchFormat: Int) : ViewModel() {
         val hasWon = if (isLeft) state.gameScoreLeft >= setsToWin
                      else state.gameScoreRight >= setsToWin
         if (hasWon) {
-            this.state = GameState()
+            this.state = GameState(isLeftServing = state.isLeftServing)
         }
     }
 
