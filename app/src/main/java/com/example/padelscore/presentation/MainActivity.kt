@@ -48,7 +48,7 @@ fun PadelScoreApp() {
                     matchFormat = selected
                     screen = Screen.GAME
                 })
-                Screen.GAME -> ScoreScreen()
+                Screen.GAME -> ScoreScreen(matchFormat = matchFormat)
             }
         }
     }

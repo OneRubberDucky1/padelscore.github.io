@@ -4,8 +4,17 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 
-class ScoreViewModel : ViewModel() {
+class ScoreViewModel(val matchFormat: Int) : ViewModel() {
+
+    companion object {
+        fun factory(matchFormat: Int) = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                ScoreViewModel(matchFormat) as T
+        }
+    }
     private val scoreArray = arrayOf(0, 15, 30, 40)
 
     var state by mutableStateOf(GameState())
@@ -49,10 +58,10 @@ class ScoreViewModel : ViewModel() {
         val inDeuce = playerCounter == scoreArray.lastIndex && oppCounter == scoreArray.lastIndex
         if (!inDeuce) return scoreArray[playerCounter].toString()
         return when (state.advantage) {
-            -1 -> "Deuce"
+            -1 -> "D"
             0 -> if (isLeft) "AD" else "40"
             1 -> if (!isLeft) "AD" else "40"
-            else -> "Deuce"
+            else -> "D"
         }
     }
 
@@ -62,6 +71,20 @@ class ScoreViewModel : ViewModel() {
         } else {
             state.copy(gameScoreRight = state.gameScoreRight + 1)
         }
+        checkMatchWin(isLeft, state)
+        resetState()
+    }
+
+    private fun checkMatchWin(isLeft: Boolean, state: GameState) {
+        val setsToWin = (matchFormat + 1) / 2
+        val hasWon = if (isLeft) state.gameScoreLeft >= setsToWin
+                     else state.gameScoreRight >= setsToWin
+        if (hasWon) {
+            this.state = GameState()
+        }
+    }
+
+    private fun resetState() {
         state = state.copy(counterLeft = 0, counterRight = 0, advantage = -1)
     }
 }

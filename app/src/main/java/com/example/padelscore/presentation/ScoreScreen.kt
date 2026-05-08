@@ -23,7 +23,7 @@ import androidx.wear.compose.material.Text
 import androidx.wear.tooling.preview.devices.WearDevices
 
 @Composable
-fun ScoreScreen(viewModel: ScoreViewModel = viewModel()) {
+fun ScoreScreen(matchFormat: Int = 3, viewModel: ScoreViewModel = viewModel(factory = ScoreViewModel.factory(matchFormat))) {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
