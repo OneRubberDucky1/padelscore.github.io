@@ -47,8 +47,9 @@ import com.example.padelscore.presentation.theme.*
 private val matchOptions = listOf(1, 3, 5)
 
 @Composable
-fun SplashScreen(onStartGame: (Int) -> Unit) {
-    var selectedIndex by remember { mutableIntStateOf(1) }
+fun SplashScreen(onStartGame: (Int, Int) -> Unit) {
+    var selectedGamesIndex by remember { mutableIntStateOf(1) }
+    var selectedSetsIndex by remember { mutableIntStateOf(1) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -58,34 +59,47 @@ fun SplashScreen(onStartGame: (Int) -> Unit) {
         Text(
             text = "Padel",
             fontSize = TitleSize,
-            fontWeight = FontWeight.Bold,
+            fontWeight = WeightExtra,
             color = MaterialTheme.colors.onBackground
         )
         Spacer(modifier = Modifier.height(6.dp))
         Text(
-            text = "Best of",
+            text = "GAMES",
             fontSize = LabelSize,
-            color = MaterialTheme.colors.onBackground
+            color = OnSurfaceDim,
+            letterSpacing = LabelTracking
+        )
+        Spacer(modifier = Modifier.height(4.dp))
+        MatchFormatSelector(
+            selectedIndex = selectedGamesIndex,
+            onSelect = { selectedGamesIndex = it }
         )
         Spacer(modifier = Modifier.height(6.dp))
-        MatchFormatSelector(
-            selectedIndex = selectedIndex,
-            onSelect = { selectedIndex = it }
+        Text(
+            text = "SETS",
+            fontSize = LabelSize,
+            color = OnSurfaceDim,
+            letterSpacing = LabelTracking
         )
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(4.dp))
+        MatchFormatSelector(
+            selectedIndex = selectedSetsIndex,
+            onSelect = { selectedSetsIndex = it }
+        )
+        Spacer(modifier = Modifier.height(8.dp))
         Button(
-            onClick = { onStartGame(matchOptions[selectedIndex]) },
+            onClick = { onStartGame(matchOptions[selectedGamesIndex], matchOptions[selectedSetsIndex]) },
             modifier = Modifier.size(ButtonWidth, ButtonHeight),
             shape = ButtonShape,
             colors = ButtonDefaults.buttonColors(
-                backgroundColor = MaterialTheme.colors.primary
+                backgroundColor = ChipFill
             )
         ) {
             Text(
                 text = "Start",
                 fontSize = ButtonTextSize,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colors.onPrimary
+                color = ChipText
             )
         }
     }
@@ -165,7 +179,7 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
                         text = "$value",
                         fontSize = ButtonTextSize,
                         fontWeight = if (index == selectedIndex) FontWeight.Bold else FontWeight.Normal,
-                        color = if (index == selectedIndex) CobaltLight else MaterialTheme.colors.onSurface
+                        color = if (index == selectedIndex) CobaltLight else OnSurfaceMuted
                     )
                 }
             }
@@ -177,5 +191,5 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Composable
 fun SplashScreenPreview() {
-    SplashScreen(onStartGame = {})
+    SplashScreen(onStartGame = { _, _ -> })
 }

@@ -5,6 +5,8 @@ data class GameState(
     val counterRight: Int = 0,
     val gameScoreLeft: Int = 0,
     val gameScoreRight: Int = 0,
+    val setScoreLeft: Int = 0,
+    val setScoreRight: Int = 0,
     val advantage: Int = -1,
     val isLeftServing: Boolean = true
 )

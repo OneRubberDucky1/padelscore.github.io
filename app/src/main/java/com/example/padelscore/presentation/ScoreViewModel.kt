@@ -6,15 +6,16 @@ import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 
-class ScoreViewModel(val matchFormat: Int) : ViewModel() {
+class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
 
     companion object {
-        fun factory(matchFormat: Int) = object : ViewModelProvider.Factory {
+        fun factory(gamesFormat: Int, setsFormat: Int) = object : ViewModelProvider.Factory {
             @Suppress("UNCHECKED_CAST")
             override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                ScoreViewModel(matchFormat) as T
+                ScoreViewModel(gamesFormat, setsFormat) as T
         }
     }
+
     private val scoreArray = arrayOf(0, 15, 30, 40)
 
     var state by mutableStateOf(GameState())
@@ -25,6 +26,8 @@ class ScoreViewModel(val matchFormat: Int) : ViewModel() {
 
     val leftGameScore: Int get() = state.gameScoreLeft
     val rightGameScore: Int get() = state.gameScoreRight
+    val leftSetScore: Int get() = state.setScoreLeft
+    val rightSetScore: Int get() = state.setScoreRight
     val isLeftServing: Boolean get() = state.isLeftServing
 
     fun incrementLeft() = handleIncrement(isLeft = true)
@@ -67,25 +70,37 @@ class ScoreViewModel(val matchFormat: Int) : ViewModel() {
     }
 
     private fun onGameWon(isLeft: Boolean) {
-        state = if (isLeft) {
+        state = if (isLeft)
             state.copy(gameScoreLeft = state.gameScoreLeft + 1, isLeftServing = !state.isLeftServing)
-        } else {
+        else
             state.copy(gameScoreRight = state.gameScoreRight + 1, isLeftServing = !state.isLeftServing)
-        }
-        checkMatchWin(isLeft, state)
-        resetState()
+        checkSetWin(isLeft)
+        resetPoints()
     }
 
-    private fun checkMatchWin(isLeft: Boolean, state: GameState) {
-        val setsToWin = (matchFormat + 1) / 2
-        val hasWon = if (isLeft) state.gameScoreLeft >= setsToWin
-                     else state.gameScoreRight >= setsToWin
+    private fun checkSetWin(isLeft: Boolean) {
+        val gamesToWin = (gamesFormat + 1) / 2
+        val hasWon = if (isLeft) state.gameScoreLeft >= gamesToWin
+                     else state.gameScoreRight >= gamesToWin
         if (hasWon) {
-            this.state = GameState(isLeftServing = state.isLeftServing)
+            state = if (isLeft)
+                state.copy(setScoreLeft = state.setScoreLeft + 1, gameScoreLeft = 0, gameScoreRight = 0)
+            else
+                state.copy(setScoreRight = state.setScoreRight + 1, gameScoreLeft = 0, gameScoreRight = 0)
+            checkMatchWin(isLeft)
         }
     }
 
-    private fun resetState() {
+    private fun checkMatchWin(isLeft: Boolean) {
+        val setsToWin = (setsFormat + 1) / 2
+        val hasWon = if (isLeft) state.setScoreLeft >= setsToWin
+                     else state.setScoreRight >= setsToWin
+        if (hasWon) {
+            state = GameState(isLeftServing = state.isLeftServing)
+        }
+    }
+
+    private fun resetPoints() {
         state = state.copy(counterLeft = 0, counterRight = 0, advantage = -1)
     }
 }
