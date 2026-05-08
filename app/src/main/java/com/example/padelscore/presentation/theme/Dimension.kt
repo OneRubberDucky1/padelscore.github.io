@@ -6,12 +6,12 @@ import androidx.compose.ui.unit.dp
 val scoreButton                = 60.dp
 
 // ─── Start button ──────────────────────────────────────────────────────────
-val ButtonWidth                = 124.dp
-val ButtonHeight               =  40.dp
+val ButtonWidth                = 80.dp
+val ButtonHeight               =  28.dp
 
 // ─── Selector / pill rail ──────────────────────────────────────────────────
-val SelectorHeight             =  34.dp
-val SelectorPaddingHorizontal  =  16.dp
+val SelectorWidth              = 120.dp
+val SelectorHeight             =  21.dp
 val SelectorStroke             =   2.5.dp
 
 // ─── Splash layout ─────────────────────────────────────────────────────────

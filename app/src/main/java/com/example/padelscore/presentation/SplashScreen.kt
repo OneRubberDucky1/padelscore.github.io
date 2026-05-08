@@ -14,10 +14,9 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -34,7 +33,6 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Button
@@ -60,33 +58,33 @@ fun SplashScreen(onStartGame: (Int, Int) -> Unit) {
             text = "Padel",
             fontSize = TitleSize,
             fontWeight = WeightExtra,
-            color = MaterialTheme.colors.onBackground
+            color = OnSurface
         )
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "GAMES",
-            fontSize = LabelSize,
+            fontSize = LabelSizeSmall,
             color = OnSurfaceDim,
             letterSpacing = LabelTracking
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(2.dp))
         MatchFormatSelector(
             selectedIndex = selectedGamesIndex,
             onSelect = { selectedGamesIndex = it }
         )
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(4.dp))
         Text(
             text = "SETS",
-            fontSize = LabelSize,
+            fontSize = LabelSizeSmall,
             color = OnSurfaceDim,
             letterSpacing = LabelTracking
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(2.dp))
         MatchFormatSelector(
             selectedIndex = selectedSetsIndex,
             onSelect = { selectedSetsIndex = it }
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(6.dp))
         Button(
             onClick = { onStartGame(matchOptions[selectedGamesIndex], matchOptions[selectedSetsIndex]) },
             modifier = Modifier.size(ButtonWidth, ButtonHeight),
@@ -98,7 +96,7 @@ fun SplashScreen(onStartGame: (Int, Int) -> Unit) {
             Text(
                 text = "Start",
                 fontSize = ButtonTextSize,
-                fontWeight = FontWeight.Bold,
+                fontWeight = WeightBold,
                 color = ChipText
             )
         }
@@ -115,8 +113,7 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
 
     Box(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = SelectorPaddingHorizontal)
+            .width(SelectorWidth)
             .height(SelectorHeight)
     ) {
         Box(
@@ -177,8 +174,8 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
                 ) {
                     Text(
                         text = "$value",
-                        fontSize = ButtonTextSize,
-                        fontWeight = if (index == selectedIndex) FontWeight.Bold else FontWeight.Normal,
+                        fontSize = PillNumberSize,
+                        fontWeight = if (index == selectedIndex) WeightBold else WeightMedium,
                         color = if (index == selectedIndex) CobaltLight else OnSurfaceMuted
                     )
                 }
