@@ -36,10 +36,16 @@ fun ScoreScreen(viewModel: ScoreViewModel = viewModel()) {
         }
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceEvenly,
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
             ScoreButton(score = viewModel.leftScore, onClick = { viewModel.incrementLeft() })
+            Text(
+                text = ":",
+                fontSize = ScoreSize,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colors.onPrimary
+            )
             ScoreButton(score = viewModel.rightScore, onClick = { viewModel.incrementRight() })
         }
         Spacer(modifier = Modifier.height(8.dp))
