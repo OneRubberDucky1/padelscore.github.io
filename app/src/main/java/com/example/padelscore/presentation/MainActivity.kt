@@ -42,8 +42,12 @@ fun PadelScoreApp() {
             contentAlignment = Alignment.Center
         ) {
             var screen by remember { mutableStateOf(Screen.SPLASH) }
+            var matchFormat by remember { mutableStateOf(3) }
             when (screen) {
-                Screen.SPLASH -> SplashScreen(onStartGame = { screen = Screen.GAME })
+                Screen.SPLASH -> SplashScreen(onStartGame = { selected ->
+                    matchFormat = selected
+                    screen = Screen.GAME
+                })
                 Screen.GAME -> ScoreScreen()
             }
         }
