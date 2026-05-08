@@ -50,8 +50,8 @@ class ScoreViewModel : ViewModel() {
         if (!inDeuce) return scoreArray[playerCounter].toString()
         return when (state.advantage) {
             -1 -> "Deuce"
-            0 -> if (isLeft) "Adv" else "40"
-            1 -> if (!isLeft) "Adv" else "40"
+            0 -> if (isLeft) "AD" else "40"
+            1 -> if (!isLeft) "AD" else "40"
             else -> "Deuce"
         }
     }

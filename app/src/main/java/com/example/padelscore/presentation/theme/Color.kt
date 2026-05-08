@@ -2,5 +2,5 @@ package com.example.padelscore.presentation.theme
 
 import androidx.compose.ui.graphics.Color
 
-val GoldLight = Color(0xFFFFE57F)
-val GoldDark  = Color(0xFFFFAB00)
+val CobaltDark  = Color(0xFF0047AB)
+val CobaltLight = Color(0xFF4A90E2)

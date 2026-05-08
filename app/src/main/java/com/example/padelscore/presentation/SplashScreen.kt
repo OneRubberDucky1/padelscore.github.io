@@ -1,15 +1,14 @@
 package com.example.padelscore.presentation
 
-import android.annotation.SuppressLint
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,7 +18,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -36,7 +34,6 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -78,8 +75,8 @@ fun SplashScreen(onStartGame: (Int) -> Unit) {
         Spacer(modifier = Modifier.height(10.dp))
         Button(
             onClick = { onStartGame(matchOptions[selectedIndex]) },
-            modifier = Modifier.size(StartButtonSize),
-            shape = CircleShape,
+            modifier = Modifier.size(ButtonWidth, ButtonHeight),
+            shape = ButtonShape,
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = MaterialTheme.colors.primary
             )
@@ -94,7 +91,6 @@ fun SplashScreen(onStartGame: (Int) -> Unit) {
     }
 }
 
-@SuppressLint("UnusedBoxWithConstraintsScope")
 @Composable
 fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
     val indicatorPosition by animateFloatAsState(
@@ -103,66 +99,51 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
         label = "selector"
     )
 
-    @Suppress("UnusedBoxWithConstraintsScope")
-    BoxWithConstraints(
+    Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = SelectorPaddingHorizontal)
             .height(SelectorHeight)
-            .clip(RoundedCornerShape(50))
-            .background(MaterialTheme.colors.surface)
     ) {
-        val density = LocalDensity.current
-        val totalWidth = with(density) { maxWidth.toPx() }
-        val r = with(density) { (maxHeight / 2).toPx() }
-        val segmentWidth = totalWidth / matchOptions.size
-        val skewPx = r * SelectorSkewFraction
-        val strokePx = with(density) { SelectorStroke.toPx() }
-
-        val x = indicatorPosition * segmentWidth
-        val leftRound = (1f - (x / r)).coerceIn(0f, 1f)
-        val rightRound = ((x + segmentWidth - (totalWidth - r)) / r).coerceIn(0f, 1f)
-
-        val tlx = lerp(x + skewPx, r, leftRound)
-        val blx = lerp(x, r, leftRound)
-        val trx = lerp(x + segmentWidth, totalWidth - r, rightRound)
-        val brx = lerp(x + segmentWidth - skewPx, totalWidth - r, rightRound)
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clip(RoundedCornerShape(50))
+                .background(MaterialTheme.colors.surface)
+        )
 
         Canvas(modifier = Modifier.fillMaxSize()) {
+            val totalWidth = size.width
+            val r = size.height / 2f
+            val segmentWidth = totalWidth / matchOptions.size
+            val x = indicatorPosition * segmentWidth
+            val strokePx = SelectorStroke.toPx()
+
             val path = Path().apply {
-                moveTo(tlx, 0f)
-                lineTo(trx, 0f)
-
-                if (rightRound > 0f) {
-                    arcTo(
-                        rect = Rect(totalWidth - 2 * r, 0f, totalWidth, 2 * r),
-                        startAngleDegrees = 270f,
-                        sweepAngleDegrees = 180f,
-                        forceMoveTo = false
-                    )
-                }
-
-                lineTo(brx, size.height)
-                lineTo(blx, size.height)
-
-                if (leftRound > 0f) {
-                    arcTo(
-                        rect = Rect(0f, 0f, 2 * r, 2 * r),
-                        startAngleDegrees = 90f,
-                        sweepAngleDegrees = 180f,
-                        forceMoveTo = false
-                    )
-                }
-
+                moveTo(x + r, 0f)
+                lineTo(x + segmentWidth - r, 0f)
+                arcTo(
+                    rect = Rect(x + segmentWidth - 2 * r, 0f, x + segmentWidth, 2 * r),
+                    startAngleDegrees = 270f,
+                    sweepAngleDegrees = 180f,
+                    forceMoveTo = false
+                )
+                lineTo(x + r, size.height)
+                arcTo(
+                    rect = Rect(x, 0f, x + 2 * r, 2 * r),
+                    startAngleDegrees = 90f,
+                    sweepAngleDegrees = 180f,
+                    forceMoveTo = false
+                )
                 close()
             }
 
             drawPath(
                 path = path,
                 brush = Brush.linearGradient(
-                    colors = listOf(GoldLight, GoldDark),
-                    start = Offset(x, 0f),
-                    end = Offset(x + segmentWidth, size.height)
+                    colors = listOf(CobaltLight, CobaltDark),
+                    start = Offset(x + segmentWidth, 0f),
+                    end = Offset(x, size.height)
                 ),
                 style = Stroke(width = strokePx, cap = StrokeCap.Round, join = StrokeJoin.Round)
             )
@@ -174,14 +155,17 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .clickable { onSelect(index) },
+                        .clickable(
+                            indication = null,
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { onSelect(index) },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
                         text = "$value",
                         fontSize = ButtonTextSize,
                         fontWeight = if (index == selectedIndex) FontWeight.Bold else FontWeight.Normal,
-                        color = if (index == selectedIndex) GoldLight else MaterialTheme.colors.onSurface
+                        color = if (index == selectedIndex) CobaltLight else MaterialTheme.colors.onSurface
                     )
                 }
             }
@@ -189,7 +173,6 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
     }
 }
 
-private fun lerp(a: Float, b: Float, t: Float) = a + (b - a) * t
 
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Composable

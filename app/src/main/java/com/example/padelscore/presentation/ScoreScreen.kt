@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -58,8 +57,8 @@ fun ScoreScreenPreview() {
 fun ScoreButton(score: String, onClick: () -> Unit) {
     Button(
         onClick = onClick,
-        modifier = Modifier.size(ScoreButtonSize),
-        shape = CircleShape,
+        modifier = Modifier.size(scoreButton, scoreButton),
+        shape = ButtonShape,
         colors = ButtonDefaults.buttonColors(
             backgroundColor = MaterialTheme.colors.primary
         )
