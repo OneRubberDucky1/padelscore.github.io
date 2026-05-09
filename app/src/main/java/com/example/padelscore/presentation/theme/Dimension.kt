@@ -19,4 +19,5 @@ val SplashRowGap               =   6.dp
 val SplashSectionGap           =   8.dp
 
 // ─── Score screen ──────────────────────────────────────────────────────────
-val ScoreCircleRingWidth       =   3.dp
+val utilityButton              =  16.dp
+val utilityButtonIcon          =  14.dp

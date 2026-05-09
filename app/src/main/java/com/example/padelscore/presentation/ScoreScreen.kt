@@ -25,14 +25,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.padelscore.presentation.theme.*
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
+import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.example.padelscore.R
 
 @Composable
 fun ScoreScreen(
@@ -45,6 +48,15 @@ fun ScoreScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            UtilityButton(onClick = {}, R.drawable.ic_home)
+            UtilityButton(onClick = {}, R.drawable.ic_arrow_back)
+        }
+        Spacer(modifier = Modifier.height(15.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
@@ -63,6 +75,23 @@ fun ScoreScreen(
 @Composable
 fun ScoreScreenPreview() {
     ScoreScreen()
+}
+
+@Composable
+fun UtilityButton(onClick: () -> Unit = {}, icon: Int) {
+    Button(
+        onClick = onClick,
+        modifier = Modifier.size(utilityButton),
+        shape = UtilityButtonShape,
+        colors = ButtonDefaults.buttonColors(backgroundColor = UtilityFill)
+    ) {
+        Icon(
+            painter = painterResource(id = icon),
+            contentDescription = null,
+            tint = OnSurface,
+            modifier = Modifier.size(utilityButtonIcon)
+        )
+    }
 }
 
 @Composable

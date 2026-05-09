@@ -8,6 +8,9 @@ val CobaltDark      = Color(0xFF1E40AF)
 val CobaltLine      = Color(0xFF5B86F5)
 val CobaltSoft      = Color(0x335B86F5)
 
+// ─── Utility buttons ───────────────────────────────────────────────────────
+val UtilityFill     = Color(0xFF1A2744)
+
 // ─── Surfaces ──────────────────────────────────────────────────────────────
 val SurfaceBlack    = Color(0xFF000000)
 val SurfaceRail     = Color(0x0FFFFFFF)
