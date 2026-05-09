@@ -26,9 +26,13 @@ class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
 
     val leftGameScore: Int get() = state.gameScoreLeft
     val rightGameScore: Int get() = state.gameScoreRight
-    val leftSetScore: Int get() = state.setScoreLeft
-    val rightSetScore: Int get() = state.setScoreRight
     val isLeftServing: Boolean get() = state.isLeftServing
+    val setScores: List<SetScore> get() {
+        val list = state.completedSets.toMutableList()
+        list.add(SetScore(state.gameScoreLeft, state.gameScoreRight))
+        return list
+    }
+    val currentSetIndex: Int get() = state.currentSetIndex
 
     fun incrementLeft() = handleIncrement(isLeft = true)
     fun incrementRight() = handleIncrement(isLeft = false)
@@ -82,11 +86,12 @@ class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
         val gamesToWin = (gamesFormat + 1) / 2
         val hasWon = if (isLeft) state.gameScoreLeft >= gamesToWin
                      else state.gameScoreRight >= gamesToWin
+        val finished = SetScore(state.gameScoreLeft, state.gameScoreRight)
         if (hasWon) {
             state = if (isLeft)
-                state.copy(setScoreLeft = state.setScoreLeft + 1, gameScoreLeft = 0, gameScoreRight = 0)
+                state.copy(completedSets = state.completedSets + finished, currentSetIndex = state.currentSetIndex + 1, gameScoreLeft = 0, gameScoreRight = 0)
             else
-                state.copy(setScoreRight = state.setScoreRight + 1, gameScoreLeft = 0, gameScoreRight = 0)
+                state.copy(completedSets = state.completedSets + finished, currentSetIndex = state.currentSetIndex + 1, gameScoreLeft = 0, gameScoreRight = 0)
             checkMatchWin(isLeft)
         }
     }
@@ -96,7 +101,7 @@ class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
         val hasWon = if (isLeft) state.setScoreLeft >= setsToWin
                      else state.setScoreRight >= setsToWin
         if (hasWon) {
-            state = GameState(isLeftServing = state.isLeftServing)
+            state = GameState(isLeftServing = state.isLeftServing, completedSets = state.completedSets, currentSetIndex = state.currentSetIndex)
         }
     }
 

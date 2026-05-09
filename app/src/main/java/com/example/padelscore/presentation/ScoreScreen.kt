@@ -50,7 +50,7 @@ fun ScoreScreen(
             ScoreButton(score = viewModel.rightScore, isServing = !viewModel.isLeftServing, onClick = { viewModel.incrementRight() })
         }
         Spacer(modifier = Modifier.height(8.dp))
-        ScorePill(left = viewModel.leftGameScore, right = viewModel.rightGameScore)
+        NumberOfScorePill(viewModel.setScores, viewModel.currentSetIndex)
     }
 }
 
@@ -98,7 +98,16 @@ fun ScoreButton(score: String, isServing: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
-fun ScorePill(left: Int, right: Int) {
+fun NumberOfScorePill(sets: List<SetScore>, currentSetIndex: Int) {
+    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+        sets.forEachIndexed { index, set ->
+            ScorePill(set.left, set.right, isActive = index == currentSetIndex)
+        }
+    }
+}
+
+@Composable
+fun ScorePill(left: Int, right: Int, isActive: Boolean) {
     Box(
         modifier = Modifier
             .width(24.dp)
