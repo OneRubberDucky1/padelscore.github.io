@@ -11,15 +11,20 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.ui.geometry.Size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.RoundRect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -101,28 +106,67 @@ fun ScoreButton(score: String, isServing: Boolean, onClick: () -> Unit) {
 fun NumberOfScorePill(sets: List<SetScore>, currentSetIndex: Int) {
     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
         sets.forEachIndexed { index, set ->
-            ScorePill(set.left, set.right, isActive = index == currentSetIndex)
+            val winner: Boolean? = if (index < currentSetIndex) set.left > set.right else null
+            ScorePill(set.left, set.right, isActive = index == currentSetIndex, winner = winner)
         }
     }
 }
 
 @Composable
-fun ScorePill(left: Int, right: Int, isActive: Boolean) {
+fun ScorePill(left: Int, right: Int, isActive: Boolean, winner: Boolean?) {
     Box(
         modifier = Modifier
             .width(24.dp)
             .height(40.dp)
             .drawBehind {
                 val strokePx = 2.dp.toPx()
-                drawRoundRect(
-                    color = SurfaceRail,
-                    cornerRadius = CornerRadius(size.height / 2f),
-                    style = Stroke(width = strokePx)
-                )
+                val halfHeight = size.height / 2f
+                if (winner != null) {
+                    val pillPath = Path().apply {
+                        addRoundRect(RoundRect(Rect(0f, 0f, size.width, size.height), CornerRadius(size.height / 2f)))
+                    }
+                    val topLeft = if (winner) Offset(0f, 0f) else Offset(0f, halfHeight)
+                    clipPath(pillPath) {
+                        drawRect(
+                            brush = Brush.linearGradient(
+                                colorStops = arrayOf(
+                                    0.0f to CobaltLight.copy(alpha = 0.55f),
+                                    0.3f to CobaltLine.copy(alpha = 0.55f),
+                                    1.0f to CobaltDark.copy(alpha = 0.55f)
+                                ),
+                                start = Offset(size.width, topLeft.y),
+                                end = Offset(0f, topLeft.y + halfHeight)
+                            ),
+                            topLeft = topLeft,
+                            size = Size(size.width, halfHeight)
+                        )
+                    }
+                }
+                if (isActive) {
+                    drawRoundRect(
+                        brush = Brush.linearGradient(
+                            colorStops = arrayOf(
+                                0.0f to CobaltLight,
+                                0.3f to CobaltLine,
+                                1.0f to CobaltDark
+                            ),
+                            start = Offset(size.width, 0f),
+                            end = Offset(0f, size.height)
+                        ),
+                        cornerRadius = CornerRadius(size.height / 2f),
+                        style = Stroke(width = strokePx)
+                    )
+                } else {
+                    drawRoundRect(
+                        color = SurfaceRail,
+                        cornerRadius = CornerRadius(size.height / 2f),
+                        style = Stroke(width = strokePx)
+                    )
+                }
                 drawLine(
                     color = SurfaceRail,
-                    start = Offset(0f, size.height / 2f),
-                    end = Offset(size.width, size.height / 2f),
+                    start = Offset(0f, halfHeight),
+                    end = Offset(size.width, halfHeight),
                     strokeWidth = strokePx
                 )
             }
