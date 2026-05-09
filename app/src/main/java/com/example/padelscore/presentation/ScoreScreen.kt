@@ -54,7 +54,7 @@ fun ScoreScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             UtilityButton(onClick = onReturnHome, R.drawable.ic_home)
-            UtilityButton(onClick = {}, R.drawable.ic_arrow_back)
+            UtilityButton(onClick = { viewModel.undo() }, R.drawable.ic_arrow_back)
         }
         Spacer(modifier = Modifier.height(15.dp))
         Row(

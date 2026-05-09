@@ -1,5 +1,7 @@
 package com.example.padelscore.presentation
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -16,6 +18,8 @@ class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
         }
     }
 
+    private val history = mutableListOf<GameState>()
+
     private val scoreArray = arrayOf(0, 15, 30, 40)
 
     var state by mutableStateOf(GameState())
@@ -24,9 +28,8 @@ class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
     val leftScore: String get() = displayScore(isLeft = true)
     val rightScore: String get() = displayScore(isLeft = false)
 
-    val leftGameScore: Int get() = state.gameScoreLeft
-    val rightGameScore: Int get() = state.gameScoreRight
     val isLeftServing: Boolean get() = state.isLeftServing
+    val canUndo: Boolean get() = history.isNotEmpty()
     val setScores: List<SetScore> get() {
         val list = state.completedSets.toMutableList()
         list.add(SetScore(state.gameScoreLeft, state.gameScoreRight))
@@ -35,8 +38,20 @@ class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
     }
     val currentSetIndex: Int get() = state.currentSetIndex
 
-    fun incrementLeft() = handleIncrement(isLeft = true)
-    fun incrementRight() = handleIncrement(isLeft = false)
+    fun incrementLeft() {
+        history.add(state)
+        handleIncrement(isLeft = true)
+    }
+    fun incrementRight() {
+        history.add(state)
+        handleIncrement(isLeft = false)
+    }
+
+    fun undo() {
+        if (history.isNotEmpty()) {
+            state = history.removeAt(history.lastIndex)
+        }
+    }
 
     private fun handleIncrement(isLeft: Boolean) {
         val playerCounter = if (isLeft) state.counterLeft else state.counterRight
