@@ -30,6 +30,7 @@ class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
     val setScores: List<SetScore> get() {
         val list = state.completedSets.toMutableList()
         list.add(SetScore(state.gameScoreLeft, state.gameScoreRight))
+        repeat(setsFormat - list.size) { list.add(SetScore(0, 0)) }
         return list
     }
     val currentSetIndex: Int get() = state.currentSetIndex
@@ -86,12 +87,24 @@ class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
         val gamesToWin = (gamesFormat + 1) / 2
         val hasWon = if (isLeft) state.gameScoreLeft >= gamesToWin
                      else state.gameScoreRight >= gamesToWin
-        val finished = SetScore(state.gameScoreLeft, state.gameScoreRight)
         if (hasWon) {
+            val finished = SetScore(state.gameScoreLeft, state.gameScoreRight)
             state = if (isLeft)
-                state.copy(completedSets = state.completedSets + finished, currentSetIndex = state.currentSetIndex + 1, gameScoreLeft = 0, gameScoreRight = 0)
+                state.copy(
+                    completedSets = state.completedSets + finished,
+                    currentSetIndex = state.currentSetIndex + 1,
+                    setScoreLeft = state.setScoreLeft + 1,
+                    gameScoreLeft = 0,
+                    gameScoreRight = 0
+                )
             else
-                state.copy(completedSets = state.completedSets + finished, currentSetIndex = state.currentSetIndex + 1, gameScoreLeft = 0, gameScoreRight = 0)
+                state.copy(
+                    completedSets = state.completedSets + finished,
+                    currentSetIndex = state.currentSetIndex + 1,
+                    setScoreRight = state.setScoreRight + 1,
+                    gameScoreLeft = 0,
+                    gameScoreRight = 0
+                )
             checkMatchWin(isLeft)
         }
     }
