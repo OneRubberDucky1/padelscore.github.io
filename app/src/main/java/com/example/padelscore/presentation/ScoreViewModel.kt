@@ -29,6 +29,9 @@ class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
     val rightScore: String get() = displayScore(false)
 
     val isLeftServing: Boolean get() = state.isLeftServing
+    val isMatchOver: Boolean get() = state.isMatchOver
+    val matchWinnerIsLeft: Boolean get() = state.setScoreLeft > state.setScoreRight
+    val completedSets: List<SetScore> get() = state.completedSets
     val setScores: List<SetScore> get() {
         val list = state.completedSets.toMutableList()
         list.add(SetScore(state.gameScoreLeft, state.gameScoreRight))
@@ -128,7 +131,7 @@ class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
         val hasWon = if (isLeft) state.setScoreLeft >= setsToWin
                      else state.setScoreRight >= setsToWin
         if (hasWon) {
-            state = GameState(isLeftServing = state.isLeftServing, completedSets = state.completedSets, currentSetIndex = state.currentSetIndex)
+            state = state.copy(isMatchOver = true)
         }
     }
 

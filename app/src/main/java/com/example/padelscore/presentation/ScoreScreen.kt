@@ -43,31 +43,40 @@ fun ScoreScreen(
     onReturnHome: () -> Unit = {},
     viewModel: ScoreViewModel = viewModel(factory = ScoreViewModel.factory(gamesFormat, setsFormat))
 ) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically
+    if (viewModel.isMatchOver) {
+        GameOverScreen(
+            winnerIsLeft = viewModel.matchWinnerIsLeft,
+            completedSets = viewModel.completedSets,
+            onReturnHome = onReturnHome,
+            onUndo = { viewModel.undo() }
+        )
+    } else {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
-            UtilityButton(onClick = onReturnHome, R.drawable.ic_home)
-            UtilityButton(onClick = { viewModel.undo() }, R.drawable.ic_arrow_back)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                UtilityButton(onClick = onReturnHome, R.drawable.ic_home)
+                UtilityButton(onClick = { viewModel.undo() }, R.drawable.ic_arrow_back)
+            }
+            Spacer(modifier = Modifier.height(15.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                ScoreButton(score = viewModel.leftScore, isServing = viewModel.isLeftServing, onClick = { viewModel.incrementLeft() })
+                Text(text = ":", fontSize = ScoreSize, fontWeight = WeightBold, color = OnSurface)
+                ScoreButton(score = viewModel.rightScore, isServing = !viewModel.isLeftServing, onClick = { viewModel.incrementRight() })
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            NumberOfScorePill(viewModel.setScores, viewModel.currentSetIndex)
         }
-        Spacer(modifier = Modifier.height(15.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            ScoreButton(score = viewModel.leftScore, isServing = viewModel.isLeftServing, onClick = { viewModel.incrementLeft() })
-            Text(text = ":", fontSize = ScoreSize, fontWeight = WeightBold, color = OnSurface)
-            ScoreButton(score = viewModel.rightScore, isServing = !viewModel.isLeftServing, onClick = { viewModel.incrementRight() })
-        }
-        Spacer(modifier = Modifier.height(8.dp))
-        NumberOfScorePill(viewModel.setScores, viewModel.currentSetIndex)
     }
 }
 
