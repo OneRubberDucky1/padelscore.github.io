@@ -25,11 +25,10 @@ class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
     var state by mutableStateOf(GameState())
         private set
 
-    val leftScore: String get() = displayScore(isLeft = true)
-    val rightScore: String get() = displayScore(isLeft = false)
+    val leftScore: String get() = displayScore(true)
+    val rightScore: String get() = displayScore(false)
 
     val isLeftServing: Boolean get() = state.isLeftServing
-    val canUndo: Boolean get() = history.isNotEmpty()
     val setScores: List<SetScore> get() {
         val list = state.completedSets.toMutableList()
         list.add(SetScore(state.gameScoreLeft, state.gameScoreRight))
@@ -40,11 +39,11 @@ class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
 
     fun incrementLeft() {
         history.add(state)
-        handleIncrement(isLeft = true)
+        handleIncrement(true)
     }
     fun incrementRight() {
         history.add(state)
-        handleIncrement(isLeft = false)
+        handleIncrement(false)
     }
 
     fun undo() {
