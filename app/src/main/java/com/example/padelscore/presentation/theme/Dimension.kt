@@ -19,5 +19,12 @@ val SplashRowGap               =   6.dp
 val SplashSectionGap           =   8.dp
 
 // ─── Score screen ──────────────────────────────────────────────────────────
-val utilityButton              =  16.dp
-val utilityButtonIcon          =  14.dp
+val TopControlBtnWidth         =  28.dp
+val TopControlBtnHeight        =  22.dp
+val TopControlGap              =   6.dp
+
+val SetCellWidth               =  20.dp
+val SetCellHeight              =  36.dp
+val SetCellRadius              =   7.dp
+val SetCellGap                 =   6.dp
+val SetCellBorder              =   1.5.dp

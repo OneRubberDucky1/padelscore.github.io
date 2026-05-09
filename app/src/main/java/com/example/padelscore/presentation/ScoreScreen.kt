@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.geometry.Size
@@ -81,15 +80,22 @@ fun ScoreScreenPreview() {
 fun UtilityButton(onClick: () -> Unit = {}, icon: Int) {
     Button(
         onClick = onClick,
-        modifier = Modifier.size(utilityButton),
+        modifier = Modifier
+            .width(TopControlBtnWidth)
+            .height(TopControlBtnHeight)
+            .drawBehind {
+                val corner = CornerRadius(8.dp.toPx())
+                drawRoundRect(color = SurfaceRail, cornerRadius = corner)
+                drawRoundRect(color = OnSurface.copy(alpha = 0.16f), cornerRadius = corner, style = Stroke(width = 1.dp.toPx()))
+            },
         shape = UtilityButtonShape,
-        colors = ButtonDefaults.buttonColors(backgroundColor = UtilityFill)
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
     ) {
         Icon(
             painter = painterResource(id = icon),
             contentDescription = null,
             tint = OnSurface,
-            modifier = Modifier.size(utilityButtonIcon)
+            modifier = Modifier.size(14.dp)
         )
     }
 }
@@ -133,7 +139,7 @@ fun ScoreButton(score: String, isServing: Boolean, onClick: () -> Unit) {
 
 @Composable
 fun NumberOfScorePill(sets: List<SetScore>, currentSetIndex: Int) {
-    Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+    Row(horizontalArrangement = Arrangement.spacedBy(SetCellGap)) {
         sets.forEachIndexed { index, set ->
             val winner: Boolean? = if (index < currentSetIndex) set.left > set.right else null
             ScorePill(set.left, set.right, isActive = index == currentSetIndex, winner = winner)
@@ -145,14 +151,20 @@ fun NumberOfScorePill(sets: List<SetScore>, currentSetIndex: Int) {
 fun ScorePill(left: Int, right: Int, isActive: Boolean, winner: Boolean?) {
     Box(
         modifier = Modifier
-            .width(24.dp)
-            .height(40.dp)
+            .width(SetCellWidth)
+            .height(SetCellHeight)
             .drawBehind {
-                val strokePx = 2.dp.toPx()
+                val corner = CornerRadius(SetCellRadius.toPx())
                 val halfHeight = size.height / 2f
+                // Background fill
+                drawRoundRect(
+                    color = if (isActive) OnSurface.copy(alpha = 0.10f) else SurfaceCard,
+                    cornerRadius = corner
+                )
+                // Winner gradient fill
                 if (winner != null) {
                     val pillPath = Path().apply {
-                        addRoundRect(RoundRect(Rect(0f, 0f, size.width, size.height), CornerRadius(size.height / 2f)))
+                        addRoundRect(RoundRect(Rect(0f, 0f, size.width, size.height), corner))
                     }
                     val topLeft = if (winner) Offset(0f, 0f) else Offset(0f, halfHeight)
                     clipPath(pillPath) {
@@ -171,50 +183,54 @@ fun ScorePill(left: Int, right: Int, isActive: Boolean, winner: Boolean?) {
                         )
                     }
                 }
+                // Border
                 if (isActive) {
                     drawRoundRect(
-                        brush = Brush.linearGradient(
-                            colorStops = arrayOf(
-                                0.0f to CobaltLight,
-                                0.3f to CobaltLine,
-                                1.0f to CobaltDark
-                            ),
-                            start = Offset(size.width, 0f),
-                            end = Offset(0f, size.height)
-                        ),
-                        cornerRadius = CornerRadius(size.height / 2f),
-                        style = Stroke(width = strokePx)
+                        color = CobaltLine,
+                        cornerRadius = corner,
+                        style = Stroke(width = SetCellBorder.toPx())
                     )
                 } else {
                     drawRoundRect(
-                        color = SurfaceRail,
-                        cornerRadius = CornerRadius(size.height / 2f),
-                        style = Stroke(width = strokePx)
+                        color = OnSurface.copy(alpha = 0.08f),
+                        cornerRadius = corner,
+                        style = Stroke(width = 1.dp.toPx())
                     )
                 }
+                // Divider
                 drawLine(
-                    color = SurfaceRail,
+                    color = SurfaceDivider,
                     start = Offset(0f, halfHeight),
                     end = Offset(size.width, halfHeight),
-                    strokeWidth = strokePx
+                    strokeWidth = 1.dp.toPx()
                 )
             }
     ) {
-        Text(
-            text = "$left",
-            modifier = Modifier.align(Alignment.TopCenter).padding(top = 3.dp),
-            fontSize = SetCellNumber,
-            lineHeight = SetCellNumber,
-            fontWeight = WeightBold,
-            color = OnSurface
-        )
-        Text(
-            text = "$right",
-            modifier = Modifier.align(Alignment.BottomCenter).padding(bottom = 3.dp),
-            fontSize = SetCellNumber,
-            lineHeight = SetCellNumber,
-            fontWeight = WeightBold,
-            color = OnSurface
-        )
+        Column(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "$left",
+                    fontSize = SetCellNumber,
+                    lineHeight = SetCellNumber,
+                    fontWeight = WeightBold,
+                    color = if (isActive || winner == true) OnSurface else OnSurfaceFaint
+                )
+            }
+            Box(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "$right",
+                    fontSize = SetCellNumber,
+                    lineHeight = SetCellNumber,
+                    fontWeight = WeightBold,
+                    color = if (isActive || winner == false) OnSurface else OnSurfaceFaint
+                )
+            }
+        }
     }
 }
