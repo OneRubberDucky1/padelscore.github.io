@@ -51,6 +51,7 @@ fun ScoreScreen(
             onUndo = { viewModel.undo() }
         )
     } else {
+        val dim = LocalAppDimensions.current
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -58,66 +59,71 @@ fun ScoreScreen(
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                horizontalArrangement = Arrangement.spacedBy(dim.spacingM, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 UtilityButton(onClick = onReturnHome, R.drawable.ic_home)
                 UtilityButton(onClick = { viewModel.undo() }, R.drawable.ic_arrow_back)
             }
-            Spacer(modifier = Modifier.height(15.dp))
+            Spacer(modifier = Modifier.height(dim.spacingXl))
             Row(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+                horizontalArrangement = Arrangement.spacedBy(dim.spacingM, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 ScoreButton(score = viewModel.leftScore, isServing = viewModel.isLeftServing, onClick = { viewModel.incrementLeft() })
-                Text(text = ":", fontSize = ScoreSize, fontWeight = WeightBold, color = OnSurface)
+                val typ = LocalAppTypography.current
+                Text(text = ":", fontSize = typ.scoreSize, fontWeight = WeightBold, color = OnSurface)
                 ScoreButton(score = viewModel.rightScore, isServing = !viewModel.isLeftServing, onClick = { viewModel.incrementRight() })
             }
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(dim.spacingM))
             NumberOfScorePill(viewModel.setScores, viewModel.currentSetIndex)
         }
     }
 }
 
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
+@Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
 @Composable
 fun ScoreScreenPreview() {
-    ScoreScreen()
+    PadelScoreTheme { ScoreScreen() }
 }
 
 @Composable
 fun UtilityButton(onClick: () -> Unit = {}, icon: Int) {
+    val dim = LocalAppDimensions.current
     Button(
         onClick = onClick,
         modifier = Modifier
-            .width(TopControlBtnWidth)
-            .height(TopControlBtnHeight)
+            .width(dim.topControlBtnWidth)
+            .height(dim.topControlBtnHeight)
             .drawBehind {
-                val corner = CornerRadius(8.dp.toPx())
+                val corner = CornerRadius(dim.utilityButtonCorner.toPx())
                 drawRoundRect(color = SurfaceRail, cornerRadius = corner)
                 drawRoundRect(color = OnSurface.copy(alpha = 0.16f), cornerRadius = corner, style = Stroke(width = 1.dp.toPx()))
             },
-        shape = UtilityButtonShape,
+        shape = dim.utilityButtonShape,
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
     ) {
         Icon(
             painter = painterResource(id = icon),
             contentDescription = null,
             tint = OnSurface,
-            modifier = Modifier.size(14.dp)
+            modifier = Modifier.size(dim.iconSize)
         )
     }
 }
 
 @Composable
 fun ScoreButton(score: String, isServing: Boolean, onClick: () -> Unit) {
+    val dim = LocalAppDimensions.current
+    val typ = LocalAppTypography.current
     Button(
         onClick = onClick,
         modifier = Modifier
-            .size(scoreButton, scoreButton)
+            .size(dim.scoreButton, dim.scoreButton)
             .drawBehind {
-                val corner = CornerRadius(14.dp.toPx())
+                val corner = CornerRadius(dim.buttonCorner.toPx())
                 if (isServing) {
                     drawRoundRect(
                         brush = Brush.linearGradient(
@@ -135,12 +141,12 @@ fun ScoreButton(score: String, isServing: Boolean, onClick: () -> Unit) {
                     drawRoundRect(color = ChipFill, cornerRadius = corner)
                 }
             },
-        shape = ButtonShape,
+        shape = dim.buttonShape,
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
     ) {
         Text(
             text = score,
-            fontSize = ScoreSize,
+            fontSize = typ.scoreSize,
             fontWeight = WeightBold,
             color = if (isServing) OnSurface else ChipText
         )
@@ -149,7 +155,8 @@ fun ScoreButton(score: String, isServing: Boolean, onClick: () -> Unit) {
 
 @Composable
 fun NumberOfScorePill(sets: List<SetScore>, currentSetIndex: Int) {
-    Row(horizontalArrangement = Arrangement.spacedBy(SetCellGap)) {
+    val dim = LocalAppDimensions.current
+    Row(horizontalArrangement = Arrangement.spacedBy(dim.setCellGap)) {
         sets.forEachIndexed { index, set ->
             val winner: Boolean? = if (index < currentSetIndex) set.left > set.right else null
             ScorePill(set.left, set.right, isActive = index == currentSetIndex, winner = winner)
@@ -159,12 +166,14 @@ fun NumberOfScorePill(sets: List<SetScore>, currentSetIndex: Int) {
 
 @Composable
 fun ScorePill(left: Int, right: Int, isActive: Boolean, winner: Boolean?) {
+    val dim = LocalAppDimensions.current
+    val typ = LocalAppTypography.current
     Box(
         modifier = Modifier
-            .width(SetCellWidth)
-            .height(SetCellHeight)
+            .width(dim.setCellWidth)
+            .height(dim.setCellHeight)
             .drawBehind {
-                val corner = CornerRadius(SetCellRadius.toPx())
+                val corner = CornerRadius(dim.setCellRadius.toPx())
                 val halfHeight = size.height / 2f
                 drawRoundRect(
                     color = if (isActive) OnSurface.copy(alpha = 0.10f) else SurfaceCard,
@@ -195,7 +204,7 @@ fun ScorePill(left: Int, right: Int, isActive: Boolean, winner: Boolean?) {
                     drawRoundRect(
                         color = CobaltLine,
                         cornerRadius = corner,
-                        style = Stroke(width = SetCellBorder.toPx())
+                        style = Stroke(width = dim.setCellBorder.toPx())
                     )
                 } else {
                     drawRoundRect(
@@ -219,8 +228,8 @@ fun ScorePill(left: Int, right: Int, isActive: Boolean, winner: Boolean?) {
             ) {
                 Text(
                     text = "$left",
-                    fontSize = SetCellNumber,
-                    lineHeight = SetCellNumber,
+                    fontSize = typ.setCellNumber,
+                    lineHeight = typ.setCellNumber,
                     fontWeight = WeightBold,
                     color = if (isActive || winner == true) OnSurface else OnSurfaceFaint
                 )
@@ -231,8 +240,8 @@ fun ScorePill(left: Int, right: Int, isActive: Boolean, winner: Boolean?) {
             ) {
                 Text(
                     text = "$right",
-                    fontSize = SetCellNumber,
-                    lineHeight = SetCellNumber,
+                    fontSize = typ.setCellNumber,
+                    lineHeight = typ.setCellNumber,
                     fontWeight = WeightBold,
                     color = if (isActive || winner == false) OnSurface else OnSurfaceFaint
                 )

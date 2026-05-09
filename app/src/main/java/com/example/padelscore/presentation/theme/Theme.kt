@@ -1,6 +1,7 @@
 package com.example.padelscore.presentation.theme
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.graphics.Color
 import androidx.wear.compose.material.Colors
 import androidx.wear.compose.material.MaterialTheme
@@ -23,5 +24,12 @@ private val PadelColors = Colors(
 
 @Composable
 fun PadelScoreTheme(content: @Composable () -> Unit) {
-    MaterialTheme(colors = PadelColors, content = content)
+    val dimensions = rememberAppDimensions()
+    val typography = rememberAppTypography()
+    CompositionLocalProvider(
+        LocalAppDimensions provides dimensions,
+        LocalAppTypography provides typography,
+    ) {
+        MaterialTheme(colors = PadelColors, content = content)
+    }
 }

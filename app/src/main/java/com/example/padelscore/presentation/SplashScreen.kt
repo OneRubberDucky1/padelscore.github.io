@@ -35,7 +35,6 @@ import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.MaterialTheme
@@ -47,6 +46,8 @@ private val matchOptions = listOf(1, 3, 5)
 
 @Composable
 fun SplashScreen(onStartGame: (Int, Int) -> Unit) {
+    val dim = LocalAppDimensions.current
+    val typ = LocalAppTypography.current
     var selectedGamesIndex by remember { mutableIntStateOf(1) }
     var selectedSetsIndex by remember { mutableIntStateOf(1) }
 
@@ -57,47 +58,47 @@ fun SplashScreen(onStartGame: (Int, Int) -> Unit) {
     ) {
         Text(
             text = "PADEL",
-            fontSize = TitleSize,
+            fontSize = typ.titleSize,
             fontWeight = WeightExtra,
             color = CobaltLight,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(dim.spacingXs))
         Text(
             text = "GAMES",
-            fontSize = LabelSizeSmall,
+            fontSize = typ.labelSizeSmall,
             color = OnSurfaceDim,
-            letterSpacing = LabelTracking
+            letterSpacing = typ.labelTracking
         )
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.height(dim.spacingXxs))
         MatchFormatSelector(
             selectedIndex = selectedGamesIndex,
             onSelect = { selectedGamesIndex = it }
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(dim.spacingXs))
         Text(
             text = "SETS",
-            fontSize = LabelSizeSmall,
+            fontSize = typ.labelSizeSmall,
             color = OnSurfaceDim,
-            letterSpacing = LabelTracking
+            letterSpacing = typ.labelTracking
         )
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.height(dim.spacingXxs))
         MatchFormatSelector(
             selectedIndex = selectedSetsIndex,
             onSelect = { selectedSetsIndex = it }
         )
-        Spacer(modifier = Modifier.height(6.dp))
+        Spacer(modifier = Modifier.height(dim.spacingS))
         Button(
             onClick = { onStartGame(matchOptions[selectedGamesIndex], matchOptions[selectedSetsIndex]) },
-            modifier = Modifier.size(ButtonWidth, ButtonHeight),
-            shape = ButtonShape,
+            modifier = Modifier.size(dim.buttonWidth, dim.buttonHeight),
+            shape = dim.buttonShape,
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = ChipFill
             )
         ) {
             Text(
                 text = "Start",
-                fontSize = ButtonTextSize,
+                fontSize = typ.buttonTextSize,
                 fontWeight = WeightBold,
                 color = ChipText
             )
@@ -107,6 +108,8 @@ fun SplashScreen(onStartGame: (Int, Int) -> Unit) {
 
 @Composable
 fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
+    val dim = LocalAppDimensions.current
+    val typ = LocalAppTypography.current
     val indicatorPosition by animateFloatAsState(
         targetValue = selectedIndex.toFloat(),
         animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing),
@@ -115,8 +118,8 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
 
     Box(
         modifier = Modifier
-            .width(SelectorWidth)
-            .height(SelectorHeight)
+            .width(dim.selectorWidth)
+            .height(dim.selectorHeight)
     ) {
         Box(
             modifier = Modifier
@@ -130,7 +133,7 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
             val r = size.height / 2f
             val segmentWidth = totalWidth / matchOptions.size
             val x = indicatorPosition * segmentWidth
-            val strokePx = SelectorStroke.toPx()
+            val strokePx = dim.selectorStroke.toPx()
 
             val path = Path().apply {
                 moveTo(x + r, 0f)
@@ -176,7 +179,7 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
                 ) {
                     Text(
                         text = "$value",
-                        fontSize = PillNumberSize,
+                        fontSize = typ.pillNumberSize,
                         fontWeight = if (index == selectedIndex) WeightBold else WeightMedium,
                         color = if (index == selectedIndex) CobaltLight else OnSurfaceMuted
                     )
@@ -188,7 +191,8 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
 
 
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
+@Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
 @Composable
 fun SplashScreenPreview() {
-    SplashScreen(onStartGame = { _, _ -> })
+    PadelScoreTheme { SplashScreen(onStartGame = { _, _ -> }) }
 }

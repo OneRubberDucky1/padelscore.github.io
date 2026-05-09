@@ -66,6 +66,7 @@ fun PadelScoreApp() {
 }
 
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
+@Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
 @Composable
 fun PadelScoreAppPreview() {
     PadelScoreApp()

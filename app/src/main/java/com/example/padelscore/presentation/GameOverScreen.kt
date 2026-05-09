@@ -12,7 +12,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Text
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.padelscore.R
@@ -25,6 +24,8 @@ fun GameOverScreen(
     onReturnHome: () -> Unit = {},
     onUndo: () -> Unit = {}
 ) {
+    val dim = LocalAppDimensions.current
+    val typ = LocalAppTypography.current
     val leftSets = completedSets.count { it.left > it.right }
     val rightSets = completedSets.count { it.right > it.left }
 
@@ -35,36 +36,36 @@ fun GameOverScreen(
     ) {
         Text(
             text = "MATCH OVER",
-            fontSize = LabelSizeSmall,
+            fontSize = typ.labelSizeSmall,
             fontWeight = WeightMedium,
             color = OnSurfaceFaint,
-            letterSpacing = LabelTracking,
+            letterSpacing = typ.labelTracking,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(4.dp))
+        Spacer(modifier = Modifier.height(dim.spacingXs))
         Text(
             text = if (winnerIsLeft) "LEFT WINS" else "RIGHT WINS",
-            fontSize = GameScoreSize,
+            fontSize = typ.gameScoreSize,
             fontWeight = WeightExtra,
             color = CobaltLight,
             textAlign = TextAlign.Center
         )
         Text(
             text = "$leftSets – $rightSets",
-            fontSize = LabelSize,
+            fontSize = typ.labelSize,
             fontWeight = WeightMedium,
             color = OnSurfaceDim,
             textAlign = TextAlign.Center
         )
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(dim.spacingM))
         NumberOfScorePill(
             sets = completedSets,
             currentSetIndex = completedSets.size
         )
-        Spacer(modifier = Modifier.height(10.dp))
+        Spacer(modifier = Modifier.height(dim.spacingL))
         Row(
             modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
+            horizontalArrangement = Arrangement.spacedBy(dim.spacingM, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
             UtilityButton(onReturnHome, icon = R.drawable.ic_home)
@@ -74,10 +75,13 @@ fun GameOverScreen(
 }
 
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
+@Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
 @Composable
 fun GameOverScreenPreview() {
-    GameOverScreen(
-        winnerIsLeft = true,
-        completedSets = listOf(SetScore(2, 1), SetScore(1, 2), SetScore(2, 0))
-    )
+    PadelScoreTheme {
+        GameOverScreen(
+            winnerIsLeft = true,
+            completedSets = listOf(SetScore(2, 1), SetScore(1, 2), SetScore(2, 0))
+        )
+    }
 }
