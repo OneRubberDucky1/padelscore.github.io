@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Button
@@ -55,10 +56,11 @@ fun SplashScreen(onStartGame: (Int, Int) -> Unit) {
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Padel",
+            text = "PADEL",
             fontSize = TitleSize,
             fontWeight = WeightExtra,
-            color = OnSurface
+            color = CobaltLight,
+            textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
