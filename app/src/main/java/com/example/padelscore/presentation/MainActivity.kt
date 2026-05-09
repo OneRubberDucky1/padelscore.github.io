@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.wear.compose.material.MaterialTheme
@@ -35,6 +36,7 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun PadelScoreApp() {
     PadelScoreTheme {
+        val activity = LocalContext.current as ComponentActivity
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -50,7 +52,14 @@ fun PadelScoreApp() {
                     setsFormat = sets
                     screen = Screen.GAME
                 })
-                Screen.GAME -> ScoreScreen(gamesFormat = gamesFormat, setsFormat = setsFormat)
+                Screen.GAME -> ScoreScreen(
+                    gamesFormat = gamesFormat,
+                    setsFormat = setsFormat,
+                    onReturnHome = {
+                        activity.viewModelStore.clear()
+                        screen = Screen.SPLASH
+                    }
+                )
             }
         }
     }

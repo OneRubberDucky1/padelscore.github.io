@@ -40,6 +40,7 @@ import com.example.padelscore.R
 fun ScoreScreen(
     gamesFormat: Int = 3,
     setsFormat: Int = 3,
+    onReturnHome: () -> Unit = {},
     viewModel: ScoreViewModel = viewModel(factory = ScoreViewModel.factory(gamesFormat, setsFormat))
 ) {
     Column(
@@ -52,7 +53,7 @@ fun ScoreScreen(
             horizontalArrangement = Arrangement.spacedBy(8.dp, Alignment.CenterHorizontally),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            UtilityButton(onClick = {}, R.drawable.ic_home)
+            UtilityButton(onClick = onReturnHome, R.drawable.ic_home)
             UtilityButton(onClick = {}, R.drawable.ic_arrow_back)
         }
         Spacer(modifier = Modifier.height(15.dp))
@@ -156,12 +157,10 @@ fun ScorePill(left: Int, right: Int, isActive: Boolean, winner: Boolean?) {
             .drawBehind {
                 val corner = CornerRadius(SetCellRadius.toPx())
                 val halfHeight = size.height / 2f
-                // Background fill
                 drawRoundRect(
                     color = if (isActive) OnSurface.copy(alpha = 0.10f) else SurfaceCard,
                     cornerRadius = corner
                 )
-                // Winner gradient fill
                 if (winner != null) {
                     val pillPath = Path().apply {
                         addRoundRect(RoundRect(Rect(0f, 0f, size.width, size.height), corner))
@@ -183,7 +182,6 @@ fun ScorePill(left: Int, right: Int, isActive: Boolean, winner: Boolean?) {
                         )
                     }
                 }
-                // Border
                 if (isActive) {
                     drawRoundRect(
                         color = CobaltLine,
@@ -197,7 +195,6 @@ fun ScorePill(left: Int, right: Int, isActive: Boolean, winner: Boolean?) {
                         style = Stroke(width = 1.dp.toPx())
                     )
                 }
-                // Divider
                 drawLine(
                     color = SurfaceDivider,
                     start = Offset(0f, halfHeight),
