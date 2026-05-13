@@ -9,6 +9,7 @@ data class GameState(
     val setScoreRight: Int = 0,
     val advantage: Int = -1,
     val isLeftServing: Boolean = true,
+    val leftTeam: Boolean = true,
     val completedSets: List<SetScore> = emptyList(),
     val currentSetIndex: Int = 0,
     val isMatchOver: Boolean = false

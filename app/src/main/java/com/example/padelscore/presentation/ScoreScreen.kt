@@ -77,7 +77,7 @@ fun ScoreScreen(
                 ScoreButton(score = viewModel.rightScore, isServing = !viewModel.isLeftServing, onClick = { viewModel.incrementRight() })
             }
             Spacer(modifier = Modifier.height(dim.spacingM))
-            NumberOfScorePill(viewModel.setScores, viewModel.currentSetIndex)
+            SetPillsWithServer(viewModel.setScores, viewModel.currentSetIndex, viewModel.isLeftServing)
         }
     }
 }
@@ -154,12 +154,78 @@ fun ScoreButton(score: String, isServing: Boolean, onClick: () -> Unit) {
 }
 
 @Composable
+fun SetPillsWithServer(sets: List<SetScore>, currentSetIndex: Int, isLeftServing: Boolean) {
+    val dim = LocalAppDimensions.current
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier.weight(1f),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            ImagePill(isLeftServing = isLeftServing)
+        }
+        Spacer(modifier = Modifier.width(dim.spacingXxs))
+        NumberOfScorePill(sets, currentSetIndex)
+        Box(modifier = Modifier.weight(1f))
+    }
+}
+
+@Composable
 fun NumberOfScorePill(sets: List<SetScore>, currentSetIndex: Int) {
     val dim = LocalAppDimensions.current
-    Row(horizontalArrangement = Arrangement.spacedBy(dim.setCellGap)) {
+    Row(horizontalArrangement = Arrangement.spacedBy(dim.spacingXxs)) {
         sets.forEachIndexed { index, set ->
             val winner: Boolean? = if (index < currentSetIndex) set.left > set.right else null
             ScorePill(set.left, set.right, isActive = index == currentSetIndex, winner = winner)
+        }
+    }
+}
+
+@Composable
+fun ImagePill(isLeftServing: Boolean) {
+    val dim = LocalAppDimensions.current
+    Box(
+        modifier = Modifier
+            .width(dim.setCellWidth)
+            .height(dim.setCellHeight)
+            .drawBehind {
+                drawLine(
+                    color = SurfaceDivider,
+                    start = Offset(0f, size.height / 2f),
+                    end = Offset(size.width, size.height / 2f),
+                    strokeWidth = 1.dp.toPx()
+                )
+            }
+    ) {
+        Column(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                if (isLeftServing) {
+                    Icon(
+                        painter = painterResource(R.drawable.sport_ball),
+                        contentDescription = null,
+                        tint = CobaltLight.copy(alpha = 0.65f),
+                        modifier = Modifier.size(dim.iconSize)
+                    )
+                }
+            }
+            Box(
+                modifier = Modifier.weight(1f).fillMaxWidth(),
+                contentAlignment = Alignment.Center
+            ) {
+                if (!isLeftServing) {
+                    Icon(
+                        painter = painterResource(R.drawable.sport_ball),
+                        contentDescription = null,
+                        tint = CobaltLight.copy(alpha = 0.65f),
+                        modifier = Modifier.size(dim.iconSize)
+                    )
+                }
+            }
         }
     }
 }
