@@ -1,11 +1,11 @@
 package com.example.padelscore.presentation
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -75,35 +75,14 @@ fun SplashScreen(onStartGame: (Int, Int) -> Unit) {
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            TeamColorPill(
-                leftColor = teamColorPairs[selectedPairIndex].left,
-                rightColor = teamColorPairs[selectedPairIndex].right,
+            ColorPairPill(
+                pair = teamColorPairs[selectedPairIndex],
                 onClick = { showColorPicker = true }
             )
             Spacer(modifier = Modifier.height(dim.spacingXs))
-            Text(
-                text = "GAMES",
-                fontSize = typ.labelSizeSmall,
-                color = OnSurfaceDim,
-                letterSpacing = typ.labelTracking
-            )
-            Spacer(modifier = Modifier.height(dim.spacingXxs))
-            MatchFormatSelector(
-                selectedIndex = selectedGamesIndex,
-                onSelect = { selectedGamesIndex = it }
-            )
+            LabeledSelector("GAMES", selectedGamesIndex) { selectedGamesIndex = it }
             Spacer(modifier = Modifier.height(dim.spacingXs))
-            Text(
-                text = "SETS",
-                fontSize = typ.labelSizeSmall,
-                color = OnSurfaceDim,
-                letterSpacing = typ.labelTracking
-            )
-            Spacer(modifier = Modifier.height(dim.spacingXxs))
-            MatchFormatSelector(
-                selectedIndex = selectedSetsIndex,
-                onSelect = { selectedSetsIndex = it }
-            )
+            LabeledSelector("SETS", selectedSetsIndex) { selectedSetsIndex = it }
             Spacer(modifier = Modifier.height(dim.spacingS))
             Button(
                 onClick = { onStartGame(matchOptions[selectedGamesIndex], matchOptions[selectedSetsIndex]) },
@@ -111,12 +90,7 @@ fun SplashScreen(onStartGame: (Int, Int) -> Unit) {
                 shape = dim.buttonShape,
                 colors = ButtonDefaults.buttonColors(backgroundColor = ChipFill)
             ) {
-                Text(
-                    text = "Start",
-                    fontSize = typ.buttonTextSize,
-                    fontWeight = WeightBold,
-                    color = ChipText
-                )
+                Text(text = "Start", fontSize = typ.buttonTextSize, fontWeight = WeightBold, color = ChipText)
             }
         }
 
@@ -127,10 +101,7 @@ fun SplashScreen(onStartGame: (Int, Int) -> Unit) {
         ) {
             TeamColorPickerOverlay(
                 selectedPairIndex = selectedPairIndex,
-                onPairSelected = { index ->
-                    selectedPairIndex = index
-                    showColorPicker = false
-                },
+                onPairSelected = { selectedPairIndex = it; showColorPicker = false },
                 onDismiss = { showColorPicker = false }
             )
         }
@@ -144,26 +115,22 @@ fun TeamColorPickerOverlay(
     onDismiss: () -> Unit
 ) {
     val dim = LocalAppDimensions.current
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(SurfaceBlack)
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) { onDismiss() },
+            .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { onDismiss() },
         contentAlignment = Alignment.Center
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(dim.spacingS)
         ) {
-            teamColorPairs.chunked(2).forEach { row ->
+            teamColorPairs.chunked(2).forEachIndexed { rowIdx, row ->
                 Row(horizontalArrangement = Arrangement.spacedBy(dim.spacingS)) {
-                    row.forEach { pair ->
-                        val index = teamColorPairs.indexOf(pair)
-                        ColorPairOption(
+                    row.forEachIndexed { colIdx, pair ->
+                        val index = rowIdx * 2 + colIdx
+                        ColorPairPill(
                             pair = pair,
                             isSelected = index == selectedPairIndex,
                             onClick = { onPairSelected(index) }
@@ -176,9 +143,10 @@ fun TeamColorPickerOverlay(
 }
 
 @Composable
-fun ColorPairOption(pair: TeamColorPair, isSelected: Boolean, onClick: () -> Unit) {
+fun ColorPairPill(pair: TeamColorPair, isSelected: Boolean = false, onClick: () -> Unit) {
     val dim = LocalAppDimensions.current
-    Box(
+    Button(
+        onClick = onClick,
         modifier = Modifier
             .width(dim.setCellHeight)
             .height(dim.setCellWidth)
@@ -196,74 +164,33 @@ fun ColorPairOption(pair: TeamColorPair, isSelected: Boolean, onClick: () -> Uni
                     end = Offset(size.width / 2f, size.height),
                     strokeWidth = 1.dp.toPx()
                 )
-            }
-            .clickable(
-                indication = null,
-                interactionSource = remember { MutableInteractionSource() }
-            ) { onClick() }
+            },
+        shape = RoundedCornerShape(dim.setCellRadius),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
     ) {
-        Row(modifier = Modifier.fillMaxSize()) {
-            Box(
-                modifier = Modifier.weight(1f).fillMaxHeight(),
-                contentAlignment = Alignment.Center
-            ) {
-                Canvas(modifier = Modifier.size(dim.spacingM)) { drawCircle(color = pair.left) }
-            }
-            Box(
-                modifier = Modifier.weight(1f).fillMaxHeight(),
-                contentAlignment = Alignment.Center
-            ) {
-                Canvas(modifier = Modifier.size(dim.spacingM)) { drawCircle(color = pair.right) }
+        PillDotRow(leftColor = pair.left, rightColor = pair.right)
+    }
+}
+
+@Composable
+fun PillDotRow(leftColor: Color, rightColor: Color) {
+    val dim = LocalAppDimensions.current
+    Row(modifier = Modifier.fillMaxSize()) {
+        listOf(leftColor, rightColor).forEach { color ->
+            Box(modifier = Modifier.weight(1f).fillMaxHeight(), contentAlignment = Alignment.Center) {
+                Canvas(modifier = Modifier.size(dim.spacingM)) { drawCircle(color = color) }
             }
         }
     }
 }
 
 @Composable
-fun TeamColorPill(
-    leftColor: Color,
-    rightColor: Color,
-    onClick: () -> Unit
-) {
+fun LabeledSelector(label: String, selectedIndex: Int, onSelect: (Int) -> Unit) {
     val dim = LocalAppDimensions.current
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .width(dim.setCellHeight)
-            .height(dim.setCellWidth)
-            .drawBehind {
-                val corner = CornerRadius(dim.setCellRadius.toPx())
-                drawRoundRect(color = SurfaceCard, cornerRadius = corner)
-                drawRoundRect(
-                    color = OnSurface.copy(alpha = 0.08f),
-                    cornerRadius = corner,
-                    style = Stroke(width = 1.dp.toPx())
-                )
-                drawLine(
-                    color = SurfaceDivider,
-                    start = Offset(size.width / 2f, 0f),
-                    end = Offset(size.width / 2f, size.height),
-                    strokeWidth = 1.dp.toPx()
-                )
-            },
-        shape = RoundedCornerShape(dim.setCellRadius),
-        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
-    ) {
-        Row(modifier = Modifier.fillMaxSize()) {
-            Box(
-                modifier = Modifier.weight(1f).fillMaxHeight(),
-                contentAlignment = Alignment.Center
-            ) {
-                Canvas(modifier = Modifier.size(dim.spacingM)) { drawCircle(color = leftColor) }
-            }
-            Box(
-                modifier = Modifier.weight(1f).fillMaxHeight(),
-                contentAlignment = Alignment.Center
-            ) {
-                Canvas(modifier = Modifier.size(dim.spacingM)) { drawCircle(color = rightColor) }
-            }
-        }
-    }
+    val typ = LocalAppTypography.current
+    Text(label, fontSize = typ.labelSizeSmall, color = OnSurfaceDim, letterSpacing = typ.labelTracking)
+    Spacer(modifier = Modifier.height(dim.spacingXxs))
+    MatchFormatSelector(selectedIndex = selectedIndex, onSelect = onSelect)
 }
 
 @Composable
@@ -276,44 +203,21 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
         label = "selector"
     )
 
-    Box(
-        modifier = Modifier
-            .width(dim.selectorWidth)
-            .height(dim.selectorHeight)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .clip(RoundedCornerShape(50))
-                .background(MaterialTheme.colors.surface)
-        )
+    Box(modifier = Modifier.width(dim.selectorWidth).height(dim.selectorHeight)) {
+        Box(modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(50)).background(MaterialTheme.colors.surface))
 
         Canvas(modifier = Modifier.fillMaxSize()) {
-            val totalWidth = size.width
             val r = size.height / 2f
-            val segmentWidth = totalWidth / matchOptions.size
+            val segmentWidth = size.width / matchOptions.size
             val x = indicatorPosition * segmentWidth
-            val strokePx = dim.selectorStroke.toPx()
-
             val path = Path().apply {
                 moveTo(x + r, 0f)
                 lineTo(x + segmentWidth - r, 0f)
-                arcTo(
-                    rect = Rect(x + segmentWidth - 2 * r, 0f, x + segmentWidth, 2 * r),
-                    startAngleDegrees = 270f,
-                    sweepAngleDegrees = 180f,
-                    forceMoveTo = false
-                )
+                arcTo(Rect(x + segmentWidth - 2 * r, 0f, x + segmentWidth, 2 * r), 270f, 180f, false)
                 lineTo(x + r, size.height)
-                arcTo(
-                    rect = Rect(x, 0f, x + 2 * r, 2 * r),
-                    startAngleDegrees = 90f,
-                    sweepAngleDegrees = 180f,
-                    forceMoveTo = false
-                )
+                arcTo(Rect(x, 0f, x + 2 * r, 2 * r), 90f, 180f, false)
                 close()
             }
-
             drawPath(
                 path = path,
                 brush = Brush.linearGradient(
@@ -321,7 +225,7 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
                     start = Offset(x + segmentWidth, 0f),
                     end = Offset(x, size.height)
                 ),
-                style = Stroke(width = strokePx, cap = StrokeCap.Round, join = StrokeJoin.Round)
+                style = Stroke(width = dim.selectorStroke.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
             )
         }
 
@@ -331,10 +235,7 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
                     modifier = Modifier
                         .weight(1f)
                         .fillMaxHeight()
-                        .clickable(
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) { onSelect(index) },
+                        .clickable(indication = null, interactionSource = remember { MutableInteractionSource() }) { onSelect(index) },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
