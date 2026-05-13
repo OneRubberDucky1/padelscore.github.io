@@ -26,15 +26,18 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.MaterialTheme
@@ -44,64 +47,117 @@ import com.example.padelscore.presentation.theme.*
 
 private val matchOptions = listOf(1, 3, 5)
 
+private val teamColorPalette = listOf(
+    CobaltLight, CobaltDark, TeamRed, TeamGreen, TeamGold, TeamPurple, TeamOrange, TeamWhite
+)
+
 @Composable
 fun SplashScreen(onStartGame: (Int, Int) -> Unit) {
     val dim = LocalAppDimensions.current
     val typ = LocalAppTypography.current
     var selectedGamesIndex by remember { mutableIntStateOf(1) }
     var selectedSetsIndex by remember { mutableIntStateOf(1) }
+    var leftColorIndex by remember { mutableIntStateOf(0) }
+    var rightColorIndex by remember { mutableIntStateOf(1) }
 
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
-        Text(
-            text = "PADEL",
-            fontSize = typ.titleSize,
-            fontWeight = WeightExtra,
-            color = CobaltLight,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(dim.spacingXs))
-        Text(
-            text = "GAMES",
-            fontSize = typ.labelSizeSmall,
-            color = OnSurfaceDim,
-            letterSpacing = typ.labelTracking
-        )
-        Spacer(modifier = Modifier.height(dim.spacingXxs))
-        MatchFormatSelector(
-            selectedIndex = selectedGamesIndex,
-            onSelect = { selectedGamesIndex = it }
-        )
-        Spacer(modifier = Modifier.height(dim.spacingXs))
-        Text(
-            text = "SETS",
-            fontSize = typ.labelSizeSmall,
-            color = OnSurfaceDim,
-            letterSpacing = typ.labelTracking
-        )
-        Spacer(modifier = Modifier.height(dim.spacingXxs))
-        MatchFormatSelector(
-            selectedIndex = selectedSetsIndex,
-            onSelect = { selectedSetsIndex = it }
-        )
-        Spacer(modifier = Modifier.height(dim.spacingS))
-        Button(
-            onClick = { onStartGame(matchOptions[selectedGamesIndex], matchOptions[selectedSetsIndex]) },
-            modifier = Modifier.size(dim.buttonWidth, dim.buttonHeight),
-            shape = dim.buttonShape,
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = ChipFill
+            TeamColorPill(
+                leftColor = teamColorPalette[leftColorIndex],
+                rightColor = teamColorPalette[rightColorIndex],
+                onClick = {}
             )
-        ) {
+            Spacer(modifier = Modifier.height(dim.spacingXs))
             Text(
-                text = "Start",
-                fontSize = typ.buttonTextSize,
-                fontWeight = WeightBold,
-                color = ChipText
+                text = "GAMES",
+                fontSize = typ.labelSizeSmall,
+                color = OnSurfaceDim,
+                letterSpacing = typ.labelTracking
             )
+            Spacer(modifier = Modifier.height(dim.spacingXxs))
+            MatchFormatSelector(
+                selectedIndex = selectedGamesIndex,
+                onSelect = { selectedGamesIndex = it }
+            )
+            Spacer(modifier = Modifier.height(dim.spacingXs))
+            Text(
+                text = "SETS",
+                fontSize = typ.labelSizeSmall,
+                color = OnSurfaceDim,
+                letterSpacing = typ.labelTracking
+            )
+            Spacer(modifier = Modifier.height(dim.spacingXxs))
+            MatchFormatSelector(
+                selectedIndex = selectedSetsIndex,
+                onSelect = { selectedSetsIndex = it }
+            )
+            Spacer(modifier = Modifier.height(dim.spacingS))
+            Button(
+                onClick = { onStartGame(matchOptions[selectedGamesIndex], matchOptions[selectedSetsIndex]) },
+                modifier = Modifier.size(dim.buttonWidth, dim.buttonHeight),
+                shape = dim.buttonShape,
+                colors = ButtonDefaults.buttonColors(backgroundColor = ChipFill)
+            ) {
+                Text(
+                    text = "Start",
+                    fontSize = typ.buttonTextSize,
+                    fontWeight = WeightBold,
+                    color = ChipText
+                )
+            }
+        }
+}
+
+@Composable
+fun TeamColorPill(
+    leftColor: Color,
+    rightColor: Color,
+    onClick: () -> Unit
+) {
+    val dim = LocalAppDimensions.current
+    Button(
+        onClick = onClick,
+        modifier = Modifier
+            .width(dim.setCellHeight)
+            .height(dim.setCellWidth)
+            .drawBehind {
+                val corner = CornerRadius(dim.setCellRadius.toPx())
+                drawRoundRect(color = SurfaceCard, cornerRadius = corner)
+                drawRoundRect(
+                    color = OnSurface.copy(alpha = 0.08f),
+                    cornerRadius = corner,
+                    style = Stroke(width = 1.dp.toPx())
+                )
+                drawLine(
+                    color = SurfaceDivider,
+                    start = Offset(size.width / 2f, 0f),
+                    end = Offset(size.width / 2f, size.height),
+                    strokeWidth = 1.dp.toPx()
+                )
+            },
+        shape = RoundedCornerShape(dim.setCellRadius),
+        colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
+    ) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Canvas(modifier = Modifier.size(dim.spacingM)) {
+                    drawCircle(color = leftColor)
+                }
+            }
+            Box(
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Canvas(modifier = Modifier.size(dim.spacingM)) {
+                    drawCircle(color = rightColor)
+                }
+            }
         }
     }
 }
