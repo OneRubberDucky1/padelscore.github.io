@@ -25,3 +25,11 @@ val OnSurface       = Color(0xFFFFFFFF)
 val OnSurfaceMuted  = Color(0xC7FFFFFF)
 val OnSurfaceDim    = Color(0x9EFFFFFF)
 val OnSurfaceFaint  = Color(0x73FFFFFF)
+
+// ─── Team colours ──────────────────────────────────────────────────────────
+val TeamRed         = Color(0xFFE05252)
+val TeamGreen       = Color(0xFF52C46A)
+val TeamGold        = Color(0xFFE8B84B)
+val TeamPurple      = Color(0xFF9B6FE0)
+val TeamOrange      = Color(0xFFE87E42)
+val TeamWhite       = Color(0xFFDDEAFF)

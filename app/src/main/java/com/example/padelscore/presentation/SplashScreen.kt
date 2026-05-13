@@ -1,5 +1,8 @@
 package com.example.padelscore.presentation
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
@@ -21,6 +24,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -47,8 +51,13 @@ import com.example.padelscore.presentation.theme.*
 
 private val matchOptions = listOf(1, 3, 5)
 
-private val teamColorPalette = listOf(
-    CobaltLight, CobaltDark, TeamRed, TeamGreen, TeamGold, TeamPurple, TeamOrange, TeamWhite
+data class TeamColorPair(val left: Color, val right: Color)
+
+private val teamColorPairs = listOf(
+    TeamColorPair(CobaltLight, CobaltDark),
+    TeamColorPair(TeamRed, TeamGreen),
+    TeamColorPair(TeamGold, TeamPurple),
+    TeamColorPair(TeamOrange, TeamWhite)
 )
 
 @Composable
@@ -57,18 +66,19 @@ fun SplashScreen(onStartGame: (Int, Int) -> Unit) {
     val typ = LocalAppTypography.current
     var selectedGamesIndex by remember { mutableIntStateOf(1) }
     var selectedSetsIndex by remember { mutableIntStateOf(1) }
-    var leftColorIndex by remember { mutableIntStateOf(0) }
-    var rightColorIndex by remember { mutableIntStateOf(1) }
+    var selectedPairIndex by remember { mutableIntStateOf(0) }
+    var showColorPicker by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
             TeamColorPill(
-                leftColor = teamColorPalette[leftColorIndex],
-                rightColor = teamColorPalette[rightColorIndex],
-                onClick = {}
+                leftColor = teamColorPairs[selectedPairIndex].left,
+                rightColor = teamColorPairs[selectedPairIndex].right,
+                onClick = { showColorPicker = true }
             )
             Spacer(modifier = Modifier.height(dim.spacingXs))
             Text(
@@ -109,6 +119,104 @@ fun SplashScreen(onStartGame: (Int, Int) -> Unit) {
                 )
             }
         }
+
+        AnimatedVisibility(
+            visible = showColorPicker,
+            enter = fadeIn(animationSpec = tween(200)),
+            exit = fadeOut(animationSpec = tween(200))
+        ) {
+            TeamColorPickerOverlay(
+                selectedPairIndex = selectedPairIndex,
+                onPairSelected = { index ->
+                    selectedPairIndex = index
+                    showColorPicker = false
+                },
+                onDismiss = { showColorPicker = false }
+            )
+        }
+    }
+}
+
+@Composable
+fun TeamColorPickerOverlay(
+    selectedPairIndex: Int,
+    onPairSelected: (Int) -> Unit,
+    onDismiss: () -> Unit
+) {
+    val dim = LocalAppDimensions.current
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(SurfaceBlack)
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onDismiss() },
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(dim.spacingS)
+        ) {
+            teamColorPairs.chunked(2).forEach { row ->
+                Row(horizontalArrangement = Arrangement.spacedBy(dim.spacingS)) {
+                    row.forEach { pair ->
+                        val index = teamColorPairs.indexOf(pair)
+                        ColorPairOption(
+                            pair = pair,
+                            isSelected = index == selectedPairIndex,
+                            onClick = { onPairSelected(index) }
+                        )
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun ColorPairOption(pair: TeamColorPair, isSelected: Boolean, onClick: () -> Unit) {
+    val dim = LocalAppDimensions.current
+    Box(
+        modifier = Modifier
+            .width(dim.setCellHeight)
+            .height(dim.setCellWidth)
+            .drawBehind {
+                val corner = CornerRadius(dim.setCellRadius.toPx())
+                drawRoundRect(color = SurfaceCard, cornerRadius = corner)
+                drawRoundRect(
+                    color = if (isSelected) CobaltLine else OnSurface.copy(alpha = 0.08f),
+                    cornerRadius = corner,
+                    style = Stroke(width = if (isSelected) dim.setCellBorder.toPx() else 1.dp.toPx())
+                )
+                drawLine(
+                    color = SurfaceDivider,
+                    start = Offset(size.width / 2f, 0f),
+                    end = Offset(size.width / 2f, size.height),
+                    strokeWidth = 1.dp.toPx()
+                )
+            }
+            .clickable(
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            ) { onClick() }
+    ) {
+        Row(modifier = Modifier.fillMaxSize()) {
+            Box(
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Canvas(modifier = Modifier.size(dim.spacingM)) { drawCircle(color = pair.left) }
+            }
+            Box(
+                modifier = Modifier.weight(1f).fillMaxHeight(),
+                contentAlignment = Alignment.Center
+            ) {
+                Canvas(modifier = Modifier.size(dim.spacingM)) { drawCircle(color = pair.right) }
+            }
+        }
+    }
 }
 
 @Composable
@@ -146,17 +254,13 @@ fun TeamColorPill(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
                 contentAlignment = Alignment.Center
             ) {
-                Canvas(modifier = Modifier.size(dim.spacingM)) {
-                    drawCircle(color = leftColor)
-                }
+                Canvas(modifier = Modifier.size(dim.spacingM)) { drawCircle(color = leftColor) }
             }
             Box(
                 modifier = Modifier.weight(1f).fillMaxHeight(),
                 contentAlignment = Alignment.Center
             ) {
-                Canvas(modifier = Modifier.size(dim.spacingM)) {
-                    drawCircle(color = rightColor)
-                }
+                Canvas(modifier = Modifier.size(dim.spacingM)) { drawCircle(color = rightColor) }
             }
         }
     }
@@ -244,7 +348,6 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
         }
     }
 }
-
 
 @Preview(device = WearDevices.SMALL_ROUND, showSystemUi = true)
 @Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
