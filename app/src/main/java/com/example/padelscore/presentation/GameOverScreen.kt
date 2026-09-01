@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.material.Text
@@ -22,12 +23,15 @@ fun GameOverScreen(
     winnerIsLeft: Boolean,
     completedSets: List<SetScore>,
     onReturnHome: () -> Unit = {},
-    onUndo: () -> Unit = {}
+    onUndo: () -> Unit = {},
+    leftTeam: TeamColor,
+    rightTeam: TeamColor
 ) {
     val dim = LocalAppDimensions.current
     val typ = LocalAppTypography.current
     val leftSets = completedSets.count { it.left > it.right }
     val rightSets = completedSets.count { it.right > it.left }
+    val winner = if (winnerIsLeft) leftTeam else rightTeam
 
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -44,10 +48,10 @@ fun GameOverScreen(
         )
         Spacer(modifier = Modifier.height(dim.spacingXs))
         Text(
-            text = if (winnerIsLeft) "LEFT WINS" else "RIGHT WINS",
+            text = "${winner.name.uppercase()} WINS",
             fontSize = typ.gameScoreSize,
             fontWeight = WeightExtra,
-            color = CobaltLight,
+            color = winner.color,
             textAlign = TextAlign.Center
         )
         Text(
@@ -60,7 +64,9 @@ fun GameOverScreen(
         Spacer(modifier = Modifier.height(dim.spacingM))
         NumberOfScorePill(
             sets = completedSets,
-            currentSetIndex = completedSets.size
+            currentSetIndex = completedSets.size,
+            leftColor = leftTeam.color,
+            rightColor = rightTeam.color
         )
         Spacer(modifier = Modifier.height(dim.spacingL))
         Row(
@@ -81,7 +87,9 @@ fun GameOverScreenPreview() {
     PadelScoreTheme {
         GameOverScreen(
             winnerIsLeft = true,
-            completedSets = listOf(SetScore(2, 1), SetScore(1, 2), SetScore(2, 0))
+            completedSets = listOf(SetScore(2, 1), SetScore(1, 2), SetScore(2, 0)),
+            leftTeam = TeamColor("Cobalt Light", CobaltLight),
+            rightTeam = TeamColor("Cobalt Dark", CobaltDark)
         )
     }
 }

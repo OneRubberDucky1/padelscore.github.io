@@ -51,13 +51,13 @@ import com.example.padelscore.presentation.theme.*
 
 private val matchOptions = listOf(1, 3, 5)
 
-data class TeamColorPair(val left: Color, val right: Color)
+data class TeamColorPair(val left: TeamColor, val right: TeamColor)
 
 private val teamColorPairs = listOf(
-    TeamColorPair(CobaltLight, CobaltDark),
-    TeamColorPair(TeamRed, TeamGreen),
-    TeamColorPair(TeamGold, TeamPurple),
-    TeamColorPair(TeamOrange, TeamWhite)
+    TeamColorPair(TeamColor("Cobalt Light", CobaltLight), TeamColor("Cobalt Dark", CobaltDark)),
+    TeamColorPair(TeamColor("Red", TeamRed), TeamColor("Green", TeamGreen)),
+    TeamColorPair(TeamColor("Gold", TeamGold), TeamColor("Purple", TeamPurple)),
+    TeamColorPair(TeamColor("Orange", TeamOrange), TeamColor("White", TeamWhite))
 )
 
 @Composable
@@ -168,7 +168,7 @@ fun ColorPairPill(pair: TeamColorPair, isSelected: Boolean = false, onClick: () 
         shape = RoundedCornerShape(dim.setCellRadius),
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
     ) {
-        PillDotRow(leftColor = pair.left, rightColor = pair.right)
+        PillDotRow(leftColor = pair.left.color, rightColor = pair.right.color)
     }
 }
 

@@ -40,8 +40,8 @@ import com.example.padelscore.R
 fun ScoreScreen(
     gamesFormat: Int = 3,
     setsFormat: Int = 3,
-    leftColor: Color = CobaltLight,
-    rightColor: Color = CobaltDark,
+    leftTeam: TeamColor = TeamColor("Cobalt Light", CobaltLight),
+    rightTeam: TeamColor = TeamColor("Cobalt Dark", CobaltDark),
     onReturnHome: () -> Unit = {},
     viewModel: ScoreViewModel = viewModel(factory = ScoreViewModel.factory(gamesFormat, setsFormat))
 ) {
@@ -50,7 +50,9 @@ fun ScoreScreen(
             winnerIsLeft = viewModel.matchWinnerIsLeft,
             completedSets = viewModel.completedSets,
             onReturnHome = onReturnHome,
-            onUndo = { viewModel.undo() }
+            onUndo = { viewModel.undo() },
+            leftTeam = leftTeam,
+            rightTeam = rightTeam
         )
     } else {
         val dim = LocalAppDimensions.current
@@ -73,18 +75,18 @@ fun ScoreScreen(
                 horizontalArrangement = Arrangement.spacedBy(dim.spacingM, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ScoreButton(score = viewModel.leftScore, fill = leftColor, onClick = { viewModel.incrementLeft() })
+                ScoreButton(score = viewModel.leftScore, fill = leftTeam.color, onClick = { viewModel.incrementLeft() })
                 val typ = LocalAppTypography.current
                 Text(text = ":", fontSize = typ.scoreSize, fontWeight = WeightBold, color = OnSurface)
-                ScoreButton(score = viewModel.rightScore, fill = rightColor, onClick = { viewModel.incrementRight() })
+                ScoreButton(score = viewModel.rightScore, fill = rightTeam.color, onClick = { viewModel.incrementRight() })
             }
             Spacer(modifier = Modifier.height(dim.spacingM))
             SetPillsWithServer(
                 viewModel.setScores,
                 viewModel.currentSetIndex,
                 viewModel.isLeftServing,
-                leftColor,
-                rightColor)
+                leftTeam.color,
+                rightTeam.color)
         }
     }
 }
@@ -164,18 +166,18 @@ fun SetPillsWithServer(sets: List<SetScore>,
             ImagePill(isLeftServing = isLeftServing, leftColor = leftColor, rightColor = rightColor)
         }
         Spacer(modifier = Modifier.width(dim.spacingXxs))
-        NumberOfScorePill(sets, currentSetIndex)
+        NumberOfScorePill(sets, currentSetIndex, leftColor, rightColor)
         Box(modifier = Modifier.weight(1f))
     }
 }
 
 @Composable
-fun NumberOfScorePill(sets: List<SetScore>, currentSetIndex: Int) {
+fun NumberOfScorePill(sets: List<SetScore>, currentSetIndex: Int, leftColor: Color, rightColor: Color) {
     val dim = LocalAppDimensions.current
     Row(horizontalArrangement = Arrangement.spacedBy(dim.spacingXxs)) {
         sets.forEachIndexed { index, set ->
             val winner: Boolean? = if (index < currentSetIndex) set.left > set.right else null
-            ScorePill(set.left, set.right, isActive = index == currentSetIndex, winner = winner)
+            ScorePill(set.left, set.right, isActive = index == currentSetIndex, winner = winner, leftColor, rightColor)
         }
     }
 }
@@ -214,7 +216,14 @@ fun ImagePill(isLeftServing: Boolean, leftColor: Color, rightColor: Color) {
 }
 
 @Composable
-fun ScorePill(left: Int, right: Int, isActive: Boolean, winner: Boolean?) {
+fun ScorePill(
+    left: Int,
+    right: Int,
+    isActive: Boolean,
+    winner: Boolean?,
+    leftColor: Color,
+    rightColor: Color)
+{
     val dim = LocalAppDimensions.current
     val typ = LocalAppTypography.current
     Box(
@@ -229,6 +238,7 @@ fun ScorePill(left: Int, right: Int, isActive: Boolean, winner: Boolean?) {
                     cornerRadius = corner
                 )
                 if (winner != null) {
+                    val winnerColor = if (winner) leftColor else rightColor
                     val pillPath = Path().apply {
                         addRoundRect(RoundRect(Rect(0f, 0f, size.width, size.height), corner))
                     }
@@ -237,9 +247,9 @@ fun ScorePill(left: Int, right: Int, isActive: Boolean, winner: Boolean?) {
                         drawRect(
                             brush = Brush.linearGradient(
                                 colorStops = arrayOf(
-                                    0.0f to CobaltLight.copy(alpha = 0.55f),
-                                    0.3f to CobaltLine.copy(alpha = 0.55f),
-                                    1.0f to CobaltDark.copy(alpha = 0.55f)
+                                    0.0f to winnerColor.copy(alpha = 0.35f),
+                                    0.3f to winnerColor.copy(alpha = 0.55f),
+                                    1.0f to winnerColor.copy(alpha = 0.75f)
                                 ),
                                 start = Offset(size.width, topLeft.y),
                                 end = Offset(0f, topLeft.y + halfHeight)
