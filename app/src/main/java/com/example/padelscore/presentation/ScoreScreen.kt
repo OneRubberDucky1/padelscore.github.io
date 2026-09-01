@@ -71,10 +71,10 @@ fun ScoreScreen(
                 horizontalArrangement = Arrangement.spacedBy(dim.spacingM, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ScoreButton(score = viewModel.leftScore, isServing = viewModel.isLeftServing, onClick = { viewModel.incrementLeft() })
+                ScoreButton(score = viewModel.leftScore, fill = CobaltLight, onClick = { viewModel.incrementLeft() })
                 val typ = LocalAppTypography.current
                 Text(text = ":", fontSize = typ.scoreSize, fontWeight = WeightBold, color = OnSurface)
-                ScoreButton(score = viewModel.rightScore, isServing = !viewModel.isLeftServing, onClick = { viewModel.incrementRight() })
+                ScoreButton(score = viewModel.rightScore, fill = CobaltDark, onClick = { viewModel.incrementRight() })
             }
             Spacer(modifier = Modifier.height(dim.spacingM))
             SetPillsWithServer(viewModel.setScores, viewModel.currentSetIndex, viewModel.isLeftServing)
@@ -115,7 +115,7 @@ fun UtilityButton(onClick: () -> Unit = {}, icon: Int) {
 }
 
 @Composable
-fun ScoreButton(score: String, isServing: Boolean, onClick: () -> Unit) {
+fun ScoreButton(score: String, fill: Color, onClick: () -> Unit) {
     val dim = LocalAppDimensions.current
     val typ = LocalAppTypography.current
     Button(
@@ -124,22 +124,7 @@ fun ScoreButton(score: String, isServing: Boolean, onClick: () -> Unit) {
             .size(dim.scoreButton, dim.scoreButton)
             .drawBehind {
                 val corner = CornerRadius(dim.buttonCorner.toPx())
-                if (isServing) {
-                    drawRoundRect(
-                        brush = Brush.linearGradient(
-                            colorStops = arrayOf(
-                                0.0f to CobaltLight,
-                                0.3f to CobaltLine,
-                                1.0f to CobaltDark
-                            ),
-                            start = Offset(size.width, 0f),
-                            end = Offset(0f, size.height)
-                        ),
-                        cornerRadius = corner
-                    )
-                } else {
-                    drawRoundRect(color = ChipFill, cornerRadius = corner)
-                }
+                drawRoundRect(color = fill, cornerRadius = corner)
             },
         shape = dim.buttonShape,
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
@@ -148,7 +133,7 @@ fun ScoreButton(score: String, isServing: Boolean, onClick: () -> Unit) {
             text = score,
             fontSize = typ.scoreSize,
             fontWeight = WeightBold,
-            color = if (isServing) OnSurface else ChipText
+            color = OnSurface
         )
     }
 }
