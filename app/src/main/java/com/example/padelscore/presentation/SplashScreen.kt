@@ -61,7 +61,7 @@ private val teamColorPairs = listOf(
 )
 
 @Composable
-fun SplashScreen(onStartGame: (Int, Int) -> Unit) {
+fun SplashScreen(onStartGame: (Int, Int, TeamColorPair) -> Unit) {
     val dim = LocalAppDimensions.current
     val typ = LocalAppTypography.current
     var selectedGamesIndex by remember { mutableIntStateOf(1) }
@@ -85,7 +85,7 @@ fun SplashScreen(onStartGame: (Int, Int) -> Unit) {
             LabeledSelector("SETS", selectedSetsIndex) { selectedSetsIndex = it }
             Spacer(modifier = Modifier.height(dim.spacingS))
             Button(
-                onClick = { onStartGame(matchOptions[selectedGamesIndex], matchOptions[selectedSetsIndex]) },
+                onClick = { onStartGame(matchOptions[selectedGamesIndex], matchOptions[selectedSetsIndex], teamColorPairs[selectedPairIndex]) },
                 modifier = Modifier.size(dim.buttonWidth, dim.buttonHeight),
                 shape = dim.buttonShape,
                 colors = ButtonDefaults.buttonColors(backgroundColor = ChipFill)
@@ -254,5 +254,5 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
 @Preview(device = WearDevices.LARGE_ROUND, showSystemUi = true)
 @Composable
 fun SplashScreenPreview() {
-    PadelScoreTheme { SplashScreen(onStartGame = { _, _ -> }) }
+    PadelScoreTheme { SplashScreen(onStartGame = { _, _, _ -> }) }
 }

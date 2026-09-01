@@ -40,6 +40,8 @@ import com.example.padelscore.R
 fun ScoreScreen(
     gamesFormat: Int = 3,
     setsFormat: Int = 3,
+    leftColor: Color = CobaltLight,
+    rightColor: Color = CobaltDark,
     onReturnHome: () -> Unit = {},
     viewModel: ScoreViewModel = viewModel(factory = ScoreViewModel.factory(gamesFormat, setsFormat))
 ) {
@@ -71,10 +73,10 @@ fun ScoreScreen(
                 horizontalArrangement = Arrangement.spacedBy(dim.spacingM, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ScoreButton(score = viewModel.leftScore, fill = CobaltLight, onClick = { viewModel.incrementLeft() })
+                ScoreButton(score = viewModel.leftScore, fill = leftColor, onClick = { viewModel.incrementLeft() })
                 val typ = LocalAppTypography.current
                 Text(text = ":", fontSize = typ.scoreSize, fontWeight = WeightBold, color = OnSurface)
-                ScoreButton(score = viewModel.rightScore, fill = CobaltDark, onClick = { viewModel.incrementRight() })
+                ScoreButton(score = viewModel.rightScore, fill = rightColor, onClick = { viewModel.incrementRight() })
             }
             Spacer(modifier = Modifier.height(dim.spacingM))
             SetPillsWithServer(viewModel.setScores, viewModel.currentSetIndex, viewModel.isLeftServing)

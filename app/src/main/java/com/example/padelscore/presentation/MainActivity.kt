@@ -19,6 +19,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.tooling.preview.devices.WearDevices
+import com.example.padelscore.presentation.theme.CobaltDark
+import com.example.padelscore.presentation.theme.CobaltLight
 import com.example.padelscore.presentation.theme.PadelScoreTheme
 
 private enum class Screen { SPLASH, GAME }
@@ -48,15 +50,19 @@ fun PadelScoreApp() {
             var screen by remember { mutableStateOf(Screen.SPLASH) }
             var gamesFormat by remember { mutableStateOf(3) }
             var setsFormat by remember { mutableStateOf(3) }
+            var teamColors by remember { mutableStateOf(TeamColorPair(CobaltLight, CobaltDark)) }
             when (screen) {
-                Screen.SPLASH -> SplashScreen(onStartGame = { games, sets ->
+                Screen.SPLASH -> SplashScreen(onStartGame = { games, sets, colors ->
                     gamesFormat = games
                     setsFormat = sets
+                    teamColors = colors
                     screen = Screen.GAME
                 })
                 Screen.GAME -> ScoreScreen(
                     gamesFormat = gamesFormat,
                     setsFormat = setsFormat,
+                    leftColor = teamColors.left,
+                    rightColor = teamColors.right,
                     onReturnHome = {
                         activity.viewModelStore.clear()
                         screen = Screen.SPLASH
