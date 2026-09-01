@@ -79,7 +79,12 @@ fun ScoreScreen(
                 ScoreButton(score = viewModel.rightScore, fill = rightColor, onClick = { viewModel.incrementRight() })
             }
             Spacer(modifier = Modifier.height(dim.spacingM))
-            SetPillsWithServer(viewModel.setScores, viewModel.currentSetIndex, viewModel.isLeftServing)
+            SetPillsWithServer(
+                viewModel.setScores,
+                viewModel.currentSetIndex,
+                viewModel.isLeftServing,
+                leftColor,
+                rightColor)
         }
     }
 }
@@ -141,7 +146,12 @@ fun ScoreButton(score: String, fill: Color, onClick: () -> Unit) {
 }
 
 @Composable
-fun SetPillsWithServer(sets: List<SetScore>, currentSetIndex: Int, isLeftServing: Boolean) {
+fun SetPillsWithServer(sets: List<SetScore>,
+                       currentSetIndex: Int,
+                       isLeftServing: Boolean,
+                       leftColor: Color,
+                       rightColor: Color)
+{
     val dim = LocalAppDimensions.current
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -151,7 +161,7 @@ fun SetPillsWithServer(sets: List<SetScore>, currentSetIndex: Int, isLeftServing
             modifier = Modifier.weight(1f),
             contentAlignment = Alignment.CenterEnd
         ) {
-            ImagePill(isLeftServing = isLeftServing)
+            ImagePill(isLeftServing = isLeftServing, leftColor = leftColor, rightColor = rightColor)
         }
         Spacer(modifier = Modifier.width(dim.spacingXxs))
         NumberOfScorePill(sets, currentSetIndex)
@@ -171,7 +181,7 @@ fun NumberOfScorePill(sets: List<SetScore>, currentSetIndex: Int) {
 }
 
 @Composable
-fun ImagePill(isLeftServing: Boolean) {
+fun ImagePill(isLeftServing: Boolean, leftColor: Color, rightColor: Color) {
     val dim = LocalAppDimensions.current
     Box(
         modifier = Modifier
@@ -191,27 +201,13 @@ fun ImagePill(isLeftServing: Boolean) {
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                if (isLeftServing) {
-                    Icon(
-                        painter = painterResource(R.drawable.sport_ball),
-                        contentDescription = null,
-                        tint = CobaltLight.copy(alpha = 0.65f),
-                        modifier = Modifier.size(dim.iconSize)
-                    )
-                }
+                if (isLeftServing) ServingBallIcon(leftColor)
             }
             Box(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 contentAlignment = Alignment.Center
             ) {
-                if (!isLeftServing) {
-                    Icon(
-                        painter = painterResource(R.drawable.sport_ball),
-                        contentDescription = null,
-                        tint = CobaltLight.copy(alpha = 0.65f),
-                        modifier = Modifier.size(dim.iconSize)
-                    )
-                }
+                if (!isLeftServing) ServingBallIcon(rightColor)
             }
         }
     }
@@ -301,4 +297,15 @@ fun ScorePill(left: Int, right: Int, isActive: Boolean, winner: Boolean?) {
             }
         }
     }
+}
+
+@Composable
+private fun ServingBallIcon(color: Color) {
+    val dim = LocalAppDimensions.current
+    Icon(
+        painter = painterResource(R.drawable.sport_ball),
+        contentDescription = null,
+        tint = color.copy(alpha = 0.65f),
+        modifier = Modifier.size(dim.iconSize)
+    )
 }
