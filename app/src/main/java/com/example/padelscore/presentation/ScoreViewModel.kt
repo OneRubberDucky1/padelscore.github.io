@@ -1,12 +1,14 @@
 package com.example.padelscore.presentation
 
-import android.os.Build
-import androidx.annotation.RequiresApi
+import androidx.compose.runtime.State
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 
 class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
 
@@ -31,12 +33,15 @@ class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
     val isLeftServing: Boolean get() = state.isLeftServing
     val isMatchOver: Boolean get() = state.isMatchOver
     val matchWinnerIsLeft: Boolean get() = state.setScoreLeft > state.setScoreRight
-    val completedSets: List<SetScore> get() = state.completedSets
-    val setScores: List<SetScore> get() {
-        val list = state.completedSets.toMutableList()
-        list.add(SetScore(state.gameScoreLeft, state.gameScoreRight))
-        repeat(setsFormat - list.size) { list.add(SetScore(0, 0)) }
-        return list
+    val completedSets: ImmutableList<SetScore> get() = state.completedSets
+    val setScores: State<ImmutableList<SetScore>> by lazy {
+        derivedStateOf {
+            buildList {
+                addAll(state.completedSets)
+                add(SetScore(state.gameScoreLeft, state.gameScoreRight))
+                repeat(setsFormat - size) { add(SetScore(0, 0)) }
+            }.toImmutableList()
+        }
     }
     val currentSetIndex: Int get() = state.currentSetIndex
 
@@ -108,7 +113,7 @@ class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
             val finished = SetScore(state.gameScoreLeft, state.gameScoreRight)
             state = if (isLeft)
                 state.copy(
-                    completedSets = state.completedSets + finished,
+                    completedSets = state.completedSets.add(finished),
                     currentSetIndex = state.currentSetIndex + 1,
                     setScoreLeft = state.setScoreLeft + 1,
                     gameScoreLeft = 0,
@@ -116,7 +121,7 @@ class ScoreViewModel(val gamesFormat: Int, val setsFormat: Int) : ViewModel() {
                 )
             else
                 state.copy(
-                    completedSets = state.completedSets + finished,
+                    completedSets = state.completedSets.add(finished),
                     currentSetIndex = state.currentSetIndex + 1,
                     setScoreRight = state.setScoreRight + 1,
                     gameScoreLeft = 0,

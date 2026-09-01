@@ -17,11 +17,13 @@ import androidx.wear.compose.material.Text
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.padelscore.R
 import com.example.padelscore.presentation.theme.*
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
 
 @Composable
 fun GameOverScreen(
     winnerIsLeft: Boolean,
-    completedSets: List<SetScore>,
+    completedSets: ImmutableList<SetScore>,
     onReturnHome: () -> Unit = {},
     onUndo: () -> Unit = {},
     leftTeam: TeamColor,
@@ -29,8 +31,8 @@ fun GameOverScreen(
 ) {
     val dim = LocalAppDimensions.current
     val typ = LocalAppTypography.current
-    val leftSets = completedSets.count { it.left > it.right }
-    val rightSets = completedSets.count { it.right > it.left }
+    val leftSets = completedSets.count { it.winnerIsLeft }
+    val rightSets = completedSets.count { !it.winnerIsLeft }
     val winner = if (winnerIsLeft) leftTeam else rightTeam
 
     Column(
@@ -87,7 +89,7 @@ fun GameOverScreenPreview() {
     PadelScoreTheme {
         GameOverScreen(
             winnerIsLeft = true,
-            completedSets = listOf(SetScore(2, 1), SetScore(1, 2), SetScore(2, 0)),
+            completedSets = persistentListOf(SetScore(2, 1), SetScore(1, 2), SetScore(2, 0)),
             leftTeam = TeamColor("Cobalt Light", CobaltLight),
             rightTeam = TeamColor("Cobalt Dark", CobaltDark)
         )

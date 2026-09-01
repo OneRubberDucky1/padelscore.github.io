@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.ui.geometry.Size
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
@@ -35,15 +36,17 @@ import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import androidx.wear.tooling.preview.devices.WearDevices
 import com.example.padelscore.R
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun ScoreScreen(
     gamesFormat: Int = 3,
     setsFormat: Int = 3,
+    matchId: Int = 0,
     leftTeam: TeamColor = TeamColor("Cobalt Light", CobaltLight),
     rightTeam: TeamColor = TeamColor("Cobalt Dark", CobaltDark),
     onReturnHome: () -> Unit = {},
-    viewModel: ScoreViewModel = viewModel(factory = ScoreViewModel.factory(gamesFormat, setsFormat))
+    viewModel: ScoreViewModel = viewModel(key = "match-$matchId", factory = ScoreViewModel.factory(gamesFormat, setsFormat))
 ) {
     if (viewModel.isMatchOver) {
         GameOverScreen(
@@ -75,14 +78,14 @@ fun ScoreScreen(
                 horizontalArrangement = Arrangement.spacedBy(dim.spacingM, Alignment.CenterHorizontally),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                ScoreButton(score = viewModel.leftScore, fill = leftTeam.color, onClick = { viewModel.incrementLeft() })
+                ScoreButton(score = { viewModel.leftScore }, fill = leftTeam.color, onClick = { viewModel.incrementLeft() })
                 val typ = LocalAppTypography.current
                 Text(text = ":", fontSize = typ.scoreSize, fontWeight = WeightBold, color = OnSurface)
-                ScoreButton(score = viewModel.rightScore, fill = rightTeam.color, onClick = { viewModel.incrementRight() })
+                ScoreButton(score = { viewModel.rightScore }, fill = rightTeam.color, onClick = { viewModel.incrementRight() })
             }
             Spacer(modifier = Modifier.height(dim.spacingM))
             SetPillsWithServer(
-                viewModel.setScores,
+                viewModel.setScores.value,
                 viewModel.currentSetIndex,
                 viewModel.isLeftServing,
                 leftTeam.color,
@@ -124,7 +127,7 @@ fun UtilityButton(onClick: () -> Unit = {}, icon: Int) {
 }
 
 @Composable
-fun ScoreButton(score: String, fill: Color, onClick: () -> Unit) {
+fun ScoreButton(score: () -> String, fill: Color, onClick: () -> Unit) {
     val dim = LocalAppDimensions.current
     val typ = LocalAppTypography.current
     Button(
@@ -139,7 +142,7 @@ fun ScoreButton(score: String, fill: Color, onClick: () -> Unit) {
         colors = ButtonDefaults.buttonColors(backgroundColor = Color.Transparent)
     ) {
         Text(
-            text = score,
+            text = score(),
             fontSize = typ.scoreSize,
             fontWeight = WeightBold,
             color = OnSurface
@@ -148,7 +151,7 @@ fun ScoreButton(score: String, fill: Color, onClick: () -> Unit) {
 }
 
 @Composable
-fun SetPillsWithServer(sets: List<SetScore>,
+fun SetPillsWithServer(sets: ImmutableList<SetScore>,
                        currentSetIndex: Int,
                        isLeftServing: Boolean,
                        leftColor: Color,
@@ -172,11 +175,11 @@ fun SetPillsWithServer(sets: List<SetScore>,
 }
 
 @Composable
-fun NumberOfScorePill(sets: List<SetScore>, currentSetIndex: Int, leftColor: Color, rightColor: Color) {
+fun NumberOfScorePill(sets: ImmutableList<SetScore>, currentSetIndex: Int, leftColor: Color, rightColor: Color) {
     val dim = LocalAppDimensions.current
     Row(horizontalArrangement = Arrangement.spacedBy(dim.spacingXxs)) {
         sets.forEachIndexed { index, set ->
-            val winner: Boolean? = if (index < currentSetIndex) set.left > set.right else null
+            val winner: Boolean? = if (index < currentSetIndex) set.winnerIsLeft else null
             ScorePill(set.left, set.right, isActive = index == currentSetIndex, winner = winner, leftColor, rightColor)
         }
     }
@@ -226,6 +229,7 @@ fun ScorePill(
 {
     val dim = LocalAppDimensions.current
     val typ = LocalAppTypography.current
+    val winnerPath = remember { Path() }
     Box(
         modifier = Modifier
             .width(dim.setCellWidth)
@@ -239,11 +243,10 @@ fun ScorePill(
                 )
                 if (winner != null) {
                     val winnerColor = if (winner) leftColor else rightColor
-                    val pillPath = Path().apply {
-                        addRoundRect(RoundRect(Rect(0f, 0f, size.width, size.height), corner))
-                    }
+                    winnerPath.reset()
+                    winnerPath.addRoundRect(RoundRect(Rect(0f, 0f, size.width, size.height), corner))
                     val topLeft = if (winner) Offset(0f, 0f) else Offset(0f, halfHeight)
-                    clipPath(pillPath) {
+                    clipPath(winnerPath) {
                         drawRect(
                             brush = Brush.linearGradient(
                                 colorStops = arrayOf(

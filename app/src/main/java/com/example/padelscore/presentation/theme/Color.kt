@@ -34,5 +34,5 @@ val TeamPurple      = Color(0xFF9B6FE0)
 val TeamOrange      = Color(0xFFE87E42)
 val TeamWhite       = Color(0xFFDDEAFF)
 
-// A team's chosen colour, paired with its display name (e.g. for "<NAME> WINS").
+// A team's chosen colour, paired with its display name.
 data class TeamColor(val name: String, val color: Color)

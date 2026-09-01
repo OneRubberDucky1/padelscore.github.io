@@ -202,6 +202,8 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
         animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing),
         label = "selector"
     )
+    val indicatorPath = remember { Path() }
+    val indicatorColors = remember { listOf(CobaltLight, CobaltDark) }
 
     Box(modifier = Modifier.width(dim.selectorWidth).height(dim.selectorHeight)) {
         Box(modifier = Modifier.fillMaxSize().clip(RoundedCornerShape(50)).background(MaterialTheme.colors.surface))
@@ -210,7 +212,8 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
             val r = size.height / 2f
             val segmentWidth = size.width / matchOptions.size
             val x = indicatorPosition * segmentWidth
-            val path = Path().apply {
+            indicatorPath.reset()
+            indicatorPath.apply {
                 moveTo(x + r, 0f)
                 lineTo(x + segmentWidth - r, 0f)
                 arcTo(Rect(x + segmentWidth - 2 * r, 0f, x + segmentWidth, 2 * r), 270f, 180f, false)
@@ -219,9 +222,9 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
                 close()
             }
             drawPath(
-                path = path,
+                path = indicatorPath,
                 brush = Brush.linearGradient(
-                    colors = listOf(CobaltLight, CobaltDark),
+                    colors = indicatorColors,
                     start = Offset(x + segmentWidth, 0f),
                     end = Offset(x, size.height)
                 ),
