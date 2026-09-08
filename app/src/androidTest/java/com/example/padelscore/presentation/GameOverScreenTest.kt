@@ -8,7 +8,6 @@ import org.junit.Test
  * Instrumented Compose UI tests for [GameOverScreen] — winner display and completed set scores.
  */
 class GameOverScreenTest {
-
     @get:Rule
     val composeTestRule = createComposeRule()
 

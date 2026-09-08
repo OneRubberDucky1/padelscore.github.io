@@ -9,7 +9,6 @@ import org.junit.Test
  * server indicator, and navigation to the game-over state.
  */
 class ScoreScreenTest {
-
     @get:Rule
     val composeTestRule = createComposeRule()
 

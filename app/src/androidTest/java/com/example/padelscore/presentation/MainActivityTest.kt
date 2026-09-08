@@ -9,7 +9,6 @@ import org.junit.Test
  * through an in-progress match to the game-over screen.
  */
 class MainActivityTest {
-
     @get:Rule
     val composeTestRule = createAndroidComposeRule<MainActivity>()
 
