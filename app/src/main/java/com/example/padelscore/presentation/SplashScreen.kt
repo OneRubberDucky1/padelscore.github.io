@@ -33,10 +33,9 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.Stroke
@@ -202,7 +201,6 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
         animationSpec = tween(durationMillis = 250, easing = FastOutSlowInEasing),
         label = "selector"
     )
-    val indicatorPath = remember { Path() }
     val indicatorColors = remember { listOf(CobaltLight, CobaltDark) }
 
     Box(modifier = Modifier.width(dim.selectorWidth).height(dim.selectorHeight)) {
@@ -212,22 +210,11 @@ fun MatchFormatSelector(selectedIndex: Int, onSelect: (Int) -> Unit) {
             val r = size.height / 2f
             val segmentWidth = size.width / matchOptions.size
             val x = indicatorPosition * segmentWidth
-            indicatorPath.reset()
-            indicatorPath.apply {
-                moveTo(x + r, 0f)
-                lineTo(x + segmentWidth - r, 0f)
-                arcTo(Rect(x + segmentWidth - 2 * r, 0f, x + segmentWidth, 2 * r), 270f, 180f, false)
-                lineTo(x + r, size.height)
-                arcTo(Rect(x, 0f, x + 2 * r, 2 * r), 90f, 180f, false)
-                close()
-            }
-            drawPath(
-                path = indicatorPath,
-                brush = Brush.linearGradient(
-                    colors = indicatorColors,
-                    start = Offset(x + segmentWidth, 0f),
-                    end = Offset(x, size.height)
-                ),
+            drawRoundRect(
+                brush = Brush.linearGradient(colors = indicatorColors, start = Offset(x + segmentWidth, 0f), end = Offset(x, size.height)),
+                topLeft = Offset(x, 0f),
+                size = Size(segmentWidth, size.height),
+                cornerRadius = CornerRadius(r),
                 style = Stroke(width = dim.selectorStroke.toPx(), cap = StrokeCap.Round, join = StrokeJoin.Round)
             )
         }
