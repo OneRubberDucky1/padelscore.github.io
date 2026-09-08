@@ -1,4 +1,4 @@
-package com.example.padelscore.presentation
+package io.github.padelscore.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -15,8 +15,8 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.wear.compose.material.Text
 import androidx.wear.tooling.preview.devices.WearDevices
-import com.example.padelscore.R
-import com.example.padelscore.presentation.theme.*
+import io.github.padelscore.R
+import io.github.padelscore.presentation.theme.*
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 

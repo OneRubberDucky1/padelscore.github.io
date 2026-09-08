@@ -1,4 +1,4 @@
-package com.example.padelscore.presentation
+package io.github.padelscore.presentation
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.FastOutSlowInEasing
@@ -46,7 +46,7 @@ import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.compose.material.Text
 import androidx.wear.tooling.preview.devices.WearDevices
-import com.example.padelscore.presentation.theme.*
+import io.github.padelscore.presentation.theme.*
 
 private val matchOptions = listOf(1, 3, 5)
 

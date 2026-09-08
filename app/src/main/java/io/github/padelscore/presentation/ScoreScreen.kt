@@ -1,4 +1,4 @@
-package com.example.padelscore.presentation
+package io.github.padelscore.presentation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,13 +29,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.padelscore.presentation.theme.*
+import io.github.padelscore.presentation.theme.*
 import androidx.wear.compose.material.Button
 import androidx.wear.compose.material.ButtonDefaults
 import androidx.wear.compose.material.Icon
 import androidx.wear.compose.material.Text
 import androidx.wear.tooling.preview.devices.WearDevices
-import com.example.padelscore.R
+import io.github.padelscore.R
 import kotlinx.collections.immutable.ImmutableList
 
 @Composable

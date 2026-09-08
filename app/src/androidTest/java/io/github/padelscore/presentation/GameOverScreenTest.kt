@@ -1,4 +1,4 @@
-package com.example.padelscore.presentation
+package io.github.padelscore.presentation
 
 import androidx.compose.ui.test.junit4.createComposeRule
 import org.junit.Rule

@@ -1,4 +1,4 @@
-package com.example.padelscore.presentation
+package io.github.padelscore.presentation
 
 import androidx.compose.runtime.State
 import androidx.compose.runtime.derivedStateOf

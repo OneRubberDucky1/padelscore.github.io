@@ -1,4 +1,4 @@
-package com.example.padelscore.presentation.theme
+package io.github.padelscore.presentation.theme
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable

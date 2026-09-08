@@ -1,8 +1,8 @@
-package com.example.padelscore.presentation
+package io.github.padelscore.presentation
 
-import com.example.padelscore.presentation.theme.TeamColor
-import com.example.padelscore.presentation.theme.TeamGreen
-import com.example.padelscore.presentation.theme.TeamRed
+import io.github.padelscore.presentation.theme.TeamColor
+import io.github.padelscore.presentation.theme.TeamGreen
+import io.github.padelscore.presentation.theme.TeamRed
 import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test

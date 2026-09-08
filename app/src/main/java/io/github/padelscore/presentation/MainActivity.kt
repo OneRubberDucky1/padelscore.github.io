@@ -1,4 +1,4 @@
-package com.example.padelscore.presentation
+package io.github.padelscore.presentation
 
 import android.os.Bundle
 import android.view.WindowManager
@@ -15,7 +15,7 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.wear.compose.material.MaterialTheme
 import androidx.wear.tooling.preview.devices.WearDevices
-import com.example.padelscore.presentation.theme.PadelScoreTheme
+import io.github.padelscore.presentation.theme.PadelScoreTheme
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

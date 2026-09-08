@@ -1,4 +1,4 @@
-package com.example.padelscore.presentation
+package io.github.padelscore.presentation
 
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse

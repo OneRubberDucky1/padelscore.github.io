@@ -1,13 +1,13 @@
-package com.example.padelscore.presentation
+package io.github.padelscore.presentation
 
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.example.padelscore.presentation.theme.CobaltDark
-import com.example.padelscore.presentation.theme.CobaltLight
-import com.example.padelscore.presentation.theme.TeamColor
+import io.github.padelscore.presentation.theme.CobaltDark
+import io.github.padelscore.presentation.theme.CobaltLight
+import io.github.padelscore.presentation.theme.TeamColor
 
 enum class Screen { SPLASH, GAME }
 

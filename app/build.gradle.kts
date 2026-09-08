@@ -6,13 +6,13 @@ plugins {
 }
 
 android {
-    namespace = "com.example.padelscore"
+    namespace = "io.github.padelscore"
     compileSdk {
         version = release(36)
     }
 
     defaultConfig {
-        applicationId = "com.example.padelscore"
+        applicationId = "io.github.padelscore"
         minSdk = 30
         targetSdk = 36
         versionCode = 1

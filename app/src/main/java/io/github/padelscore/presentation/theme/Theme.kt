@@ -1,4 +1,4 @@
-package com.example.padelscore.presentation.theme
+package io.github.padelscore.presentation.theme
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
