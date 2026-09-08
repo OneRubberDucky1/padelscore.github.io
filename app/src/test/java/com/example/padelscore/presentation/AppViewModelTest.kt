@@ -24,7 +24,7 @@ class AppViewModelTest {
     }
 
     @Test
-    fun `initial state is splash screen with default formats`(){
+    fun `initial state is splash screen with default formats`() {
         assertEquals(Screen.SPLASH, viewModel.screen)
         assertEquals(3, viewModel.gamesFormat)
         assertEquals(3, viewModel.setsFormat)
@@ -43,28 +43,16 @@ class AppViewModelTest {
 
     @Test
     fun `startGame increments matchId on each call`() {
-        viewModel.startGame(
-            5,
-            1,
-            altColors
-        )
+        viewModel.startGame(5, 1, altColors)
         assertEquals(1, viewModel.matchId)
 
-        viewModel.startGame(
-            5,
-            1,
-            altColors
-        )
+        viewModel.startGame(5, 1, altColors)
         assertEquals(2, viewModel.matchId)
     }
 
     @Test
     fun `returnHome moves screen back to SPLASH`() {
-        viewModel.startGame(
-            5,
-            1,
-            altColors
-        )
+        viewModel.startGame(5, 1, altColors)
 
         viewModel.returnHome()
         assertEquals(Screen.SPLASH, viewModel.screen)
@@ -72,11 +60,7 @@ class AppViewModelTest {
 
     @Test
     fun `returnHome preserves the chosen match settings`() {
-        viewModel.startGame(
-            5,
-            1,
-            altColors
-        )
+        viewModel.startGame(5, 1, altColors)
 
         viewModel.returnHome()
         assertEquals(5, viewModel.gamesFormat)
